@@ -1,0 +1,112 @@
+<div class="max-w-4xl mx-auto p-6 bg-white rounded shadow">
+  <h1 class="text-3xl font-bold mb-6">Manage Rooms</h1>
+
+  <!-- Add New Room -->
+  <div class="mb-8 border p-4 rounded shadow">
+    <h2 class="text-2xl mb-4">Add New Room</h2>
+    <form (submit)="addRoom(); $event.preventDefault()" class="space-y-4">
+      <select
+        [(ngModel)]="newRoom.roomType"
+        name="newRoomType"
+        required
+        class="border rounded p-2 w-full"
+      >
+        <option value="" disabled selected>Select room type</option>
+        <option *ngFor="let type of roomTypes" [value]="type">
+          {{ type }}
+        </option>
+      </select>
+
+      <textarea
+        [(ngModel)]="newRoom.description"
+        name="newDescription"
+        placeholder="Description"
+        required
+        class="border rounded p-2 w-full"
+      ></textarea>
+
+      <input
+        type="number"
+        [(ngModel)]="newRoom.pricePerDay"
+        name="newPriceDay"
+        placeholder="Price per Day"
+        required
+        min="0"
+        class="border rounded p-2 w-full"
+      />
+
+      <input
+        type="number"
+        [(ngModel)]="newRoom.pricePerHour"
+        name="newPriceHour"
+        placeholder="Price per Hour"
+        min="0"
+        class="border rounded p-2 w-full"
+      />
+
+      <!-- Image Uploads -->
+      <label>Main Image (required)</label>
+      <input
+        type="file"
+        (change)="onMainImageSelected($event)"
+        accept="image/*"
+        required
+      />
+
+      <label>Secondary Images (at least 2 required)</label>
+      <input
+        type="file"
+        (change)="onSecondaryImagesSelected($event)"
+        accept="image/*"
+        multiple
+      />
+
+      <button
+        type="submit"
+        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      >
+        Add Room
+      </button>
+    </form>
+  </div>
+
+  <!-- Rooms List -->
+  <table class="w-full text-left border-collapse border border-gray-200">
+    <thead>
+      <tr class="bg-gray-100">
+        <th class="border border-gray-300 p-2">Name</th>
+        <th class="border border-gray-300 p-2">Description</th>
+        <th class="border border-gray-300 p-2">Room Type</th>
+        <th class="border border-gray-300 p-2">Price/Day</th>
+        <th class="border border-gray-300 p-2">Price/Hour</th>
+        <th class="border border-gray-300 p-2">Main Image</th>
+        <th class="border border-gray-300 p-2">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let room of rooms">
+        <td class="border border-gray-300 p-2">{{ room.name }}</td>
+        <td class="border border-gray-300 p-2">{{ room.description }}</td>
+        <td class="border border-gray-300 p-2">{{ room.roomType }}</td>
+        <td class="border border-gray-300 p-2">${{ room.pricePerDay }}</td>
+        <td class="border border-gray-300 p-2">${{ room.pricePerHour }}</td>
+        <td class="border border-gray-300 p-2">
+          <img
+            *ngIf="room.mainImage"
+            [src]="room.mainImage"
+            alt="Main Image"
+            width="100"
+          />
+        </td>
+        <td class="border border-gray-300 p-2">
+          <button
+            [routerLink]="['/admin/rooms/edit', room.id]"
+            class="bg-yellow-400 px-2 py-1 rounded hover:bg-yellow-500"
+          >
+            Edit
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

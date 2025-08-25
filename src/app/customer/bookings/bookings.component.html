@@ -1,0 +1,21 @@
+<div class="max-w-4xl mx-auto p-6 bg-white rounded shadow">
+  <h1 class="text-3xl font-bold mb-6">My Bookings</h1>
+
+  <div *ngIf="bookings.length === 0">No bookings found.</div>
+
+  <ul *ngIf="bookings.length > 0" class="space-y-4">
+    <li *ngFor="let booking of bookings" class="border p-4 rounded">
+      <h2 class="font-semibold">{{ booking.roomName }}</h2>
+      <p>Booking Type: {{ booking.bookingMode }}</p>
+      <p *ngIf="booking.bookingMode === 'daily'">
+        From {{ booking.checkInDate }} to {{ booking.checkOutDate }}
+      </p>
+      <p *ngIf="booking.bookingMode === 'hourly'">
+        Date: {{ booking.bookingDate }}, Time: {{ booking.startTime }},
+        Duration: {{ booking.durationHours }} hours
+      </p>
+      <p>Members: {{ booking.numMembers }}</p>
+      <p class="font-bold">Price: ${{ booking.price }}</p>
+    </li>
+  </ul>
+</div>

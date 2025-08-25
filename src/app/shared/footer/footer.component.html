@@ -1,0 +1,8 @@
+<footer class="bg-gray-800 text-gray-300 p-4 text-center mt-12">
+  <div *ngIf="userRole === 'admin'">
+    &copy; 2025 HotelMS Admin Panel. All rights reserved.
+  </div>
+  <div *ngIf="userRole === 'customer' || !userRole">
+    &copy; 2025 HotelMS. All rights reserved.
+  </div>
+</footer>

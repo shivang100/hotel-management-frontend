@@ -1,0 +1,27 @@
+<div class="max-w-3xl mx-auto p-6 bg-white rounded shadow">
+  <h1 class="text-3xl font-bold mb-4">{{ room?.name }}</h1>
+  <img
+    src="assets/room-placeholder.jpg"
+    alt="{{ room?.name }}"
+    class="w-full h-64 object-cover mb-4 rounded"
+  />
+  <p class="mb-4">{{ room?.description }}</p>
+  <p class="text-lg font-semibold mb-4">
+    Price: ${{ room?.pricePerDay }} per day
+  </p>
+  <p *ngIf="room?.pricePerHour" class="text-md font-medium mb-6">
+    Or ${{ room?.pricePerHour }} per hour
+  </p>
+  <button
+    [routerLink]="['/customer/booking', room?.id]"
+    class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+  >
+    Book This Room
+  </button>
+  <button
+    routerLink="/customer/rooms"
+    class="px-6 py-2 bg-gray-300 rounded hover:bg-gray-400"
+  >
+    Back to Catalog
+  </button>
+</div>

@@ -1,0 +1,60 @@
+<header class="bg-blue-700 text-white p-4 flex justify-between items-center">
+  <div class="text-xl font-bold cursor-pointer" routerLink="/">HotelMS</div>
+  <nav class="space-x-6">
+    <!-- Customer Links -->
+    <ng-container *ngIf="userRole === 'customer'">
+      <a
+        routerLink="/customer/rooms"
+        routerLinkActive="underline"
+        class="hover:underline cursor-pointer"
+        >Rooms</a
+      >
+      <a
+        routerLink="/customer/cart"
+        routerLinkActive="underline"
+        class="hover:underline cursor-pointer"
+        >Cart</a
+      >
+      <a
+        routerLink="/customer/bookings"
+        routerLinkActive="underline"
+        class="hover:underline cursor-pointer"
+        >My Bookings</a
+      >
+      <a
+        routerLink="/customer/profile"
+        routerLinkActive="underline"
+        class="hover:underline cursor-pointer"
+        >Profile</a
+      >
+    </ng-container>
+
+    <!-- Admin Links -->
+    <ng-container *ngIf="userRole === 'admin'">
+      <a
+        routerLink="/admin"
+        routerLinkActive="underline"
+        class="hover:underline cursor-pointer"
+        >Dashboard</a
+      >
+      <a
+        routerLink="/admin/rooms"
+        routerLinkActive="underline"
+        class="hover:underline cursor-pointer"
+        >Manage Rooms</a
+      >
+      <a
+        routerLink="/admin/bookings"
+        routerLinkActive="underline"
+        class="hover:underline cursor-pointer"
+        >Bookings</a
+      >
+      <a
+        routerLink="/admin/profile"
+        routerLinkActive="underline"
+        class="hover:underline cursor-pointer"
+        >Profile</a
+      >
+    </ng-container>
+  </nav>
+</header>

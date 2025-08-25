@@ -1,0 +1,83 @@
+<div class="max-w-4xl mx-auto p-6 bg-white rounded shadow">
+  <h1 class="text-3xl font-bold mb-6">Edit Room: {{ room?.name }}</h1>
+
+  <form
+    (submit)="saveRoom(); $event.preventDefault()"
+    class="space-y-4"
+    *ngIf="room"
+  >
+    <input
+      type="text"
+      [(ngModel)]="room.name"
+      name="name"
+      placeholder="Room Name"
+      required
+      class="border rounded p-2 w-full"
+    />
+
+    <textarea
+      [(ngModel)]="room.description"
+      name="description"
+      placeholder="Description"
+      required
+      class="border rounded p-2 w-full"
+    ></textarea>
+
+    <input
+      type="number"
+      [(ngModel)]="room.pricePerDay"
+      name="pricePerDay"
+      placeholder="Price per Day"
+      required
+      min="0"
+      class="border rounded p-2 w-full"
+    />
+
+    <input
+      type="number"
+      [(ngModel)]="room.pricePerHour"
+      name="pricePerHour"
+      placeholder="Price per Hour"
+      min="0"
+      class="border rounded p-2 w-full"
+    />
+
+    <label>Main Image (required)</label>
+    <img
+      *ngIf="room.mainImage"
+      [src]="room.mainImage"
+      alt="Main Image"
+      width="150"
+      class="mb-2"
+    />
+    <input
+      type="file"
+      (change)="onMainImageSelected($event)"
+      accept="image/*"
+      required
+    />
+
+    <label>Secondary Images</label>
+    <div class="flex space-x-2 mb-2">
+      <img
+        *ngFor="let img of room.secondaryImages"
+        [src]="img"
+        alt="Secondary Image"
+        width="100"
+      />
+    </div>
+    <input
+      type="file"
+      (change)="onSecondaryImagesSelected($event)"
+      accept="image/*"
+      multiple
+    />
+
+    <button
+      type="submit"
+      class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+    >
+      Save
+    </button>
+  </form>
+</div>

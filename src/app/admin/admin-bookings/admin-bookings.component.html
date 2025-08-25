@@ -1,0 +1,59 @@
+<div class="max-w-6xl mx-auto p-6 bg-white rounded shadow">
+  <h1 class="text-3xl font-bold mb-6">Manage Bookings</h1>
+
+  <table class="w-full border border-gray-300 border-collapse text-left">
+    <thead class="bg-gray-100">
+      <tr>
+        <th class="p-2 border border-gray-300">ID</th>
+        <th class="p-2 border border-gray-300">Customer Name</th>
+        <th class="p-2 border border-gray-300">Room</th>
+        <th class="p-2 border border-gray-300">Booking Mode</th>
+        <th class="p-2 border border-gray-300">Dates / Times</th>
+        <th class="p-2 border border-gray-300">Status</th>
+        <th class="p-2 border border-gray-300">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let booking of bookings">
+        <td class="p-2 border border-gray-300">{{ booking.id }}</td>
+        <td class="p-2 border border-gray-300">{{ booking.customerName }}</td>
+        <td class="p-2 border border-gray-300">{{ booking.roomName }}</td>
+        <td class="p-2 border border-gray-300 capitalize">
+          {{ booking.bookingMode }}
+        </td>
+        <td class="p-2 border border-gray-300">
+          <ng-container *ngIf="booking.bookingMode === 'daily'">
+            {{ booking.checkInDate }} to {{ booking.checkOutDate }}
+          </ng-container>
+          <ng-container *ngIf="booking.bookingMode === 'hourly'">
+            {{ booking.bookingDate }} at {{ booking.startTime }},
+            {{ booking.durationHours }} hour(s)
+          </ng-container>
+        </td>
+        <td class="p-2 border border-gray-300 capitalize">
+          {{ booking.status }}
+        </td>
+        <td class="p-2 border border-gray-300 space-x-2">
+          <button
+            (click)="updateStatus(booking, 'confirmed')"
+            class="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700"
+          >
+            Confirm
+          </button>
+          <button
+            (click)="updateStatus(booking, 'cancelled')"
+            class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700"
+          >
+            Cancel
+          </button>
+          <button
+            (click)="downloadBookingPDF(booking)"
+            class="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700"
+          >
+            Download PDF
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

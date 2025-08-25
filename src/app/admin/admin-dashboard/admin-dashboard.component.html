@@ -1,0 +1,67 @@
+<div class="flex justify-center items-center py-10">
+  <h1 class="text-3xl font-bold mb-6">Admin Dashboard</h1>
+</div>
+<!-- KPI Cards -->
+<div class="grid grid-cols-4 max-w-6xl mx-auto gap-6 mb-10">
+  <div class="bg-blue-100 p-6 rounded-lg shadow text-center">
+    <div class="text-xl font-semibold mb-2">Total Rooms</div>
+    <div class="text-3xl font-bold">{{ totalRooms }}</div>
+  </div>
+  <div class="bg-green-100 p-6 rounded-lg shadow text-center">
+    <div class="text-xl font-semibold mb-2">Total Bookings</div>
+    <div class="text-3xl font-bold">{{ totalBookings }}</div>
+  </div>
+  <div class="bg-yellow-100 p-6 rounded-lg shadow text-center">
+    <div class="text-xl font-semibold mb-2">Total Customers</div>
+    <div class="text-3xl font-bold">{{ totalCustomers }}</div>
+  </div>
+  <div class="bg-purple-100 p-6 rounded-lg shadow text-center">
+    <div class="text-xl font-semibold mb-2">Revenue This Month</div>
+    <div class="text-3xl font-bold">${{ revenueThisMonth }}</div>
+  </div>
+</div>
+
+<div
+  class="flex flex-cols max-w-6xl mx-auto justify-between p-6 bg-white rounded shadow"
+>
+  <!-- Recent Bookings Table -->
+  <div class="mb-10">
+    <h2 class="text-2xl font-semibold mb-4">Recent Bookings</h2>
+    <table class="w-full table-auto border-collapse border border-gray-300">
+      <thead>
+        <tr class="bg-gray-200">
+          <th class="border border-gray-300 p-2">ID</th>
+          <th class="border border-gray-300 p-2">Customer</th>
+          <th class="border border-gray-300 p-2">Status</th>
+          <th class="border border-gray-300 p-2">Check-In</th>
+          <th class="border border-gray-300 p-2">Check-Out</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let booking of getRecentBookings()">
+          <td class="border border-gray-300 p-2">{{ booking.id }}</td>
+          <td class="border border-gray-300 p-2">{{ booking.customerName }}</td>
+          <td class="border border-gray-300 p-2 capitalize">
+            {{ booking.status }}
+          </td>
+          <td class="border border-gray-300 p-2">{{ booking.checkInDate }}</td>
+          <td class="border border-gray-300 p-2">{{ booking.checkOutDate }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Booking Status Pie Chart -->
+  <div>
+    <h2 class="text-2xl font-semibold mb-4">Booking Status Overview</h2>
+    <div class="h-[400px] w-[400px]">
+      <canvas
+        baseChart
+        [data]="bookingStatusChartData"
+        [labels]="bookingStatusChartLabels"
+        [type]="bookingStatusChartType"
+      >
+      </canvas>
+    </div>
+  </div>
+</div>

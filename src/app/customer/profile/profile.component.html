@@ -1,0 +1,116 @@
+<div class="max-w-3xl mx-auto p-6 bg-white rounded shadow">
+  <h1 class="text-3xl font-bold mb-6">My Profile</h1>
+
+  <div *ngIf="!editMode">
+    <p><strong>Full Name:</strong> {{ profile.fullName }}</p>
+    <p><strong>Email:</strong> {{ profile.email }}</p>
+    <p><strong>Phone:</strong> {{ profile.phone }}</p>
+
+    <p *ngIf="profile.address">
+      <strong>Address:</strong> {{ profile.address }}
+    </p>
+    <p *ngIf="profile.city"><strong>City:</strong> {{ profile.city }}</p>
+    <p *ngIf="profile.state"><strong>State:</strong> {{ profile.state }}</p>
+    <p *ngIf="profile.postalCode">
+      <strong>Postal Code:</strong> {{ profile.postalCode }}
+    </p>
+
+    <button
+      (click)="onEdit()"
+      class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+    >
+      Edit Profile
+    </button>
+  </div>
+
+  <form *ngIf="editMode" (ngSubmit)="onSave()" class="space-y-4">
+    <div>
+      <label class="block mb-1 font-medium">Full Name</label>
+      <input
+        type="text"
+        [(ngModel)]="profile.fullName"
+        name="fullName"
+        required
+        class="border rounded w-full px-3 py-2"
+      />
+    </div>
+
+    <div>
+      <label class="block mb-1 font-medium">Email</label>
+      <input
+        type="email"
+        [(ngModel)]="profile.email"
+        name="email"
+        required
+        class="border rounded w-full px-3 py-2"
+      />
+    </div>
+
+    <div>
+      <label class="block mb-1 font-medium">Phone</label>
+      <input
+        type="tel"
+        [(ngModel)]="profile.phone"
+        name="phone"
+        required
+        class="border rounded w-full px-3 py-2"
+      />
+    </div>
+
+    <div>
+      <label class="block mb-1 font-medium">Address</label>
+      <input
+        type="text"
+        [(ngModel)]="profile.address"
+        name="address"
+        class="border rounded w-full px-3 py-2"
+      />
+    </div>
+
+    <div class="grid grid-cols-3 gap-4">
+      <div>
+        <label class="block mb-1 font-medium">City</label>
+        <input
+          type="text"
+          [(ngModel)]="profile.city"
+          name="city"
+          class="border rounded w-full px-3 py-2"
+        />
+      </div>
+      <div>
+        <label class="block mb-1 font-medium">State</label>
+        <input
+          type="text"
+          [(ngModel)]="profile.state"
+          name="state"
+          class="border rounded w-full px-3 py-2"
+        />
+      </div>
+      <div>
+        <label class="block mb-1 font-medium">Postal Code</label>
+        <input
+          type="text"
+          [(ngModel)]="profile.postalCode"
+          name="postalCode"
+          class="border rounded w-full px-3 py-2"
+        />
+      </div>
+    </div>
+
+    <div class="flex space-x-4 mt-4">
+      <button
+        type="submit"
+        class="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+      >
+        Save
+      </button>
+      <button
+        type="button"
+        (click)="onCancel()"
+        class="px-6 py-2 bg-gray-400 rounded hover:bg-gray-500"
+      >
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>

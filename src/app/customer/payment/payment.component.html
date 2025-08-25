@@ -1,0 +1,41 @@
+<div class="max-w-4xl mx-auto p-6 bg-white rounded shadow">
+  <h1 class="text-3xl font-bold mb-6">Payment</h1>
+
+  <div *ngIf="!paymentDone">
+    <ul class="space-y-4 mb-6">
+      <li *ngFor="let item of items" class="border p-4 rounded">
+        <h2 class="font-semibold">{{ item.roomName }}</h2>
+        <p>Booking Type: {{ item.bookingMode }}</p>
+        <p *ngIf="item.bookingMode === 'daily'">
+          From {{ item.checkInDate }} to {{ item.checkOutDate }}
+        </p>
+        <p *ngIf="item.bookingMode === 'hourly'">
+          Date: {{ item.bookingDate }}, Time: {{ item.startTime }}, Duration:
+          {{ item.durationHours }} hours
+        </p>
+        <p>Members: {{ item.numMembers }}</p>
+        <p class="font-bold">Price: ${{ item.price }}</p>
+      </li>
+    </ul>
+    <p class="text-xl font-bold mb-6">Total: ${{ getTotalPrice() }}</p>
+    <button
+      (click)="onPay()"
+      class="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+    >
+      Pay
+    </button>
+  </div>
+
+  <div *ngIf="paymentDone" class="text-center py-12">
+    <h2 class="text-2xl font-bold mb-4 text-green-700">Payment Successful!</h2>
+    <p class="mb-6">
+      Thank you for your booking. Your payment has been processed.
+    </p>
+    <button
+      (click)="onBackToCart()"
+      class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+    >
+      Back to Cart
+    </button>
+  </div>
+</div>
