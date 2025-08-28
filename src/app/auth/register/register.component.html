@@ -1,48 +1,201 @@
-<div class="max-w-md mx-auto p-6 mt-20 bg-white shadow-md rounded-md">
-  <h2 class="text-2xl font-bold mb-4">Register</h2>
-  <form (ngSubmit)="onSubmit()">
-    <label class="block mb-2 font-semibold">Username</label>
-    <input
-      type="text"
-      [(ngModel)]="username"
-      name="username"
-      class="w-full p-2 border rounded mb-4"
-    />
+<div class="bg-gray-100 py-10">
+  <div class="flex items-center justify-center">
+    <!-- Card -->
+    <div class="flex w-full max-w-4xl shadow-2xl rounded-2xl overflow-hidden">
+      <!-- LEFT: Image (auto-adjusts to right-side height) -->
+      <div class="hidden md:flex w-1/2">
+        <img
+          src="assets/hotel2.jpg"
+          alt="Register Image"
+          class="w-full h-full object-cover"
+        />
+      </div>
 
-    <label class="block mb-2 font-semibold">Email</label>
-    <input
-      type="email"
-      [(ngModel)]="email"
-      name="email"
-      class="w-full p-2 border rounded mb-4"
-    />
+      <!-- RIGHT: Form -->
+      <div class="flex flex-col justify-center bg-white w-full md:w-1/2 p-10">
+        <h2
+          class="text-4xl font-medium text-center leading-snug font-serif text-gray-600 mb-6"
+        >
+          Register
+        </h2>
 
-    <label class="block mb-2 font-semibold">Password</label>
-    <input
-      type="password"
-      [(ngModel)]="password"
-      name="password"
-      class="w-full p-2 border rounded mb-4"
-    />
+        <form
+          (ngSubmit)="onRegister()"
+          #registerForm="ngForm"
+          class="space-y-6"
+          novalidate
+        >
+          <!-- Username -->
+          <div class="relative">
+            <label for="username" class="block text-gray-600 mb-1"
+              >Username</label
+            >
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="username"
+              required
+              minlength="3"
+              [(ngModel)]="username"
+              #usernameCtrl="ngModel"
+              autocomplete="username"
+              class="border w-full p-3 rounded-md placeholder-gray-400 focus:outline-none focus:border-black"
+              [class.border-red-500]="
+                usernameCtrl.invalid &&
+                (usernameCtrl.dirty || usernameCtrl.touched)
+              "
+            />
+            <small
+              *ngIf="
+                usernameCtrl.errors &&
+                (usernameCtrl.dirty || usernameCtrl.touched)
+              "
+              class="text-red-500 mt-1 block"
+              aria-live="polite"
+            >
+              <span *ngIf="usernameCtrl.errors['required']"
+                >Username is required.</span
+              >
+              <span *ngIf="usernameCtrl.errors['minlength']"
+                >Minimum 3 characters.</span
+              >
+            </small>
+          </div>
 
-    <label class="block mb-2 font-semibold">Confirm Password</label>
-    <input
-      type="password"
-      [(ngModel)]="confirmPassword"
-      name="confirmPassword"
-      class="w-full p-2 border rounded mb-4"
-    />
+          <!-- Email -->
+          <div class="relative">
+            <label for="email" class="block text-gray-600 mb-1">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="email"
+              required
+              email
+              [(ngModel)]="email"
+              #emailCtrl="ngModel"
+              autocomplete="email"
+              class="border w-full p-3 rounded-md placeholder-gray-400 focus:outline-none focus:border-black"
+              [class.border-red-500]="
+                emailCtrl.invalid && (emailCtrl.dirty || emailCtrl.touched)
+              "
+            />
+            <small
+              *ngIf="emailCtrl.errors && (emailCtrl.dirty || emailCtrl.touched)"
+              class="text-red-500 mt-1 block"
+              aria-live="polite"
+            >
+              <span *ngIf="emailCtrl.errors['required']"
+                >Email is required.</span
+              >
+              <span *ngIf="emailCtrl.errors['email']"
+                >Enter a valid email address.</span
+              >
+            </small>
+          </div>
 
-    <div *ngIf="errorMessage" class="text-red-500 mb-4">{{ errorMessage }}</div>
-    <div *ngIf="successMessage" class="text-green-500 mb-4">
-      {{ successMessage }}
+          <!-- Password -->
+          <div class="relative">
+            <label for="password" class="block text-gray-600 mb-1"
+              >Password</label
+            >
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="password"
+              required
+              minlength="6"
+              [(ngModel)]="password"
+              #passwordCtrl="ngModel"
+              autocomplete="new-password"
+              class="border w-full p-3 rounded-md placeholder-gray-400 focus:outline-none focus:border-black"
+              [class.border-red-500]="
+                passwordCtrl.invalid &&
+                (passwordCtrl.dirty || passwordCtrl.touched)
+              "
+            />
+            <small
+              *ngIf="
+                passwordCtrl.errors &&
+                (passwordCtrl.dirty || passwordCtrl.touched)
+              "
+              class="text-red-500 mt-1 block"
+              aria-live="polite"
+            >
+              <span *ngIf="passwordCtrl.errors['required']"
+                >Password is required.</span
+              >
+              <span *ngIf="passwordCtrl.errors['minlength']"
+                >Minimum 6 characters.</span
+              >
+            </small>
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="relative">
+            <label for="confirmPassword" class="block text-gray-600 mb-1"
+              >Confirm Password</label
+            >
+            <input
+              type="password"
+              id="confirmPassword"
+              name="confirmPassword"
+              placeholder="confirm password"
+              required
+              [(ngModel)]="confirmPassword"
+              #confirmCtrl="ngModel"
+              autocomplete="new-password"
+              class="border w-full p-3 rounded-md placeholder-gray-400 focus:outline-none focus:border-black"
+              [class.border-red-500]="
+                (confirmCtrl.dirty || confirmCtrl.touched) &&
+                (confirmCtrl.invalid || password !== confirmPassword)
+              "
+            />
+            <small
+              *ngIf="
+                (confirmCtrl.dirty || confirmCtrl.touched) &&
+                password !== confirmPassword
+              "
+              class="text-red-500 mt-1 block"
+              aria-live="polite"
+            >
+              Passwords must match.
+            </small>
+            <small
+              *ngIf="
+                confirmCtrl.errors && (confirmCtrl.dirty || confirmCtrl.touched)
+              "
+              class="text-red-500 mt-1 block"
+              aria-live="polite"
+            >
+              <span *ngIf="confirmCtrl.errors['required']"
+                >Please confirm your password.</span
+              >
+            </small>
+          </div>
+
+          <!-- Submit -->
+          <button
+            type="submit"
+            class="w-full py-2 rounded text-white transition bg-gradient-to-r from-green-900 via-emerald-800 to-green-900 hover:from-green-800 hover:via-emerald-700 hover:to-green-800 cursor-pointer disabled:bg-gray-300 disabled:cursor-not-allowed"
+            [disabled]="registerForm.invalid || password !== confirmPassword"
+          >
+            Register
+          </button>
+
+          <!-- Go to Login -->
+          <p class="w-full pt-2 text-center">
+            Already have an account?
+            <a
+              (click)="goToLogin()"
+              class="pl-1 text-gray-600 cursor-pointer underline"
+              >Login here</a
+            >
+          </p>
+        </form>
+      </div>
     </div>
-
-    <button
-      type="submit"
-      class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-    >
-      Register
-    </button>
-  </form>
+  </div>
 </div>

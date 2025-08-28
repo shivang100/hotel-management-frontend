@@ -1,8 +1,75 @@
-<footer class="bg-gray-800 text-gray-300 p-4 text-center mt-12">
-  <div *ngIf="userRole === 'admin'">
-    &copy; 2025 HotelMS Admin Panel. All rights reserved.
-  </div>
-  <div *ngIf="userRole === 'customer' || !userRole">
-    &copy; 2025 HotelMS. All rights reserved.
+<footer
+  class="mt-auto bg-gradient-to-r from-green-900 via-emerald-800 to-green-900 text-white"
+>
+  <div class="max-w-7xl mx-auto px-6 py-10">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- About -->
+      <div>
+        <h5 class="text-lg font-semibold tracking-tight mb-3">
+          About Green Valley Hotel
+        </h5>
+        <p class="text-white/80 leading-relaxed">
+          Experience comfort and elegance at Green Valley Hotel. Your perfect
+          destination for relaxation, luxury, and memorable stays.
+        </p>
+      </div>
+
+      <!-- Quick Links -->
+      <div>
+        <h5 class="text-lg font-semibold tracking-tight mb-3">Quick Links</h5>
+        <ul class="space-y-2">
+          <li>
+            <a routerLink="/" class="text-white/90 hover:text-white transition"
+              >Home</a
+            >
+          </li>
+          <li>
+            <a
+              routerLink="/customer/rooms"
+              class="text-white/90 hover:text-white transition"
+              >Rooms</a
+            >
+          </li>
+          <li>
+            <a
+              routerLink="/customer/bookings"
+              class="text-white/90 hover:text-white transition"
+              >Bookings</a
+            >
+          </li>
+          <li *ngIf="!user">
+            <a
+              routerLink="/login"
+              class="text-white/90 hover:text-white transition"
+              >Login</a
+            >
+          </li>
+          <li *ngIf="user">
+            <button
+              (click)="onLogout()"
+              class="text-white/90 hover:text-white transition"
+            >
+              Logout
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div>
+        <h5 class="text-lg font-semibold tracking-tight mb-3">Contact Us</h5>
+        <p class="text-white/80">Email: support@greenvalleyhotel.com</p>
+        <p class="text-white/80">Phone: +91 98765 43210</p>
+        <p class="text-white/80">
+          Address: Green Valley Road, Hilltop City, India
+        </p>
+      </div>
+    </div>
+
+    <div class="my-8 border-t border-white/20"></div>
+
+    <div class="text-center text-sm text-white/80">
+      &copy; 2025 Green Valley Hotel. Designed by me
+    </div>
   </div>
 </footer>

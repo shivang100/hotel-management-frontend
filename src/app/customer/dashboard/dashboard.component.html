@@ -1,155 +1,244 @@
-<div class="max-w-7xl mx-auto p-6">
-  <!-- Booking Filter Form -->
-  <form
-    (ngSubmit)="onSearchRooms()"
-    class="mb-10 bg-white p-6 rounded shadow-md flex flex-col sm:flex-row gap-6 items-end"
-  >
-    <!-- Booking mode toggle -->
-    <div class="flex items-center gap-3">
-      <label class="flex items-center gap-2 cursor-pointer">
-        <input
-          type="radio"
-          name="bookingMode"
-          [(ngModel)]="bookingMode"
-          value="daily"
-        />
-        <span>Daily</span>
-      </label>
-      <label class="flex items-center gap-2 cursor-pointer">
-        <input
-          type="radio"
-          name="bookingMode"
-          [(ngModel)]="bookingMode"
-          value="hourly"
-        />
-        <span>Hourly</span>
-      </label>
-    </div>
-
-    <!-- Daily Booking Inputs -->
-    <div *ngIf="bookingMode === 'daily'" class="flex gap-4 flex-wrap flex-grow">
-      <div>
-        <label class="block mb-1 font-medium">Check-in Date</label>
-        <input
-          type="date"
-          [(ngModel)]="checkInDate"
-          name="checkInDate"
-          required
-          class="border rounded px-3 py-2"
-        />
-      </div>
-      <div>
-        <label class="block mb-1 font-medium">Check-out Date</label>
-        <input
-          type="date"
-          [(ngModel)]="checkOutDate"
-          name="checkOutDate"
-          required
-          class="border rounded px-3 py-2"
-        />
-      </div>
-    </div>
-
-    <!-- Hourly Booking Inputs -->
-    <div
-      *ngIf="bookingMode === 'hourly'"
-      class="flex gap-4 flex-wrap flex-grow"
-    >
-      <div>
-        <label class="block mb-1 font-medium">Booking Date</label>
-        <input
-          type="date"
-          [(ngModel)]="bookingDate"
-          name="bookingDate"
-          required
-          class="border rounded px-3 py-2"
-        />
-      </div>
-      <div>
-        <label class="block mb-1 font-medium">Start Time</label>
-        <input
-          type="time"
-          [(ngModel)]="startTime"
-          name="startTime"
-          required
-          class="border rounded px-3 py-2"
-        />
-      </div>
-      <div>
-        <label class="block mb-1 font-medium">Duration (hours)</label>
-        <input
-          type="number"
-          min="1"
-          max="12"
-          [(ngModel)]="durationHours"
-          name="durationHours"
-          required
-          class="border rounded px-3 py-2"
-        />
-      </div>
-    </div>
-
-    <!-- Room Type -->
-    <div>
-      <label class="block mb-1 font-medium">Room Type</label>
-      <select
-        [(ngModel)]="selectedRoomType"
-        name="selectedRoomType"
-        class="border rounded px-3 py-2"
-      >
-        <option value="">All Types</option>
-        <option value="Standard Room">Standard Room</option>
-        <option value="Deluxe Room">Deluxe Room</option>
-        <option value="Suite">Suite</option>
-      </select>
-    </div>
-
-    <!-- Number of Members -->
-    <div>
-      <label class="block mb-1 font-medium">Number of Members</label>
-      <input
-        type="number"
-        min="1"
-        max="10"
-        [(ngModel)]="numMembers"
-        name="numMembers"
-        required
-        class="border rounded px-3 py-2"
+<div class="bg-gray-100">
+  <div class="hero">
+    <div class="logo-bar">
+      <img
+        src="assets/logo-green-valley.png"
+        alt="Green Valley"
+        class="brand"
       />
     </div>
 
-    <button
-      type="submit"
-      class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+    <swiper-container
+      class="hero-swiper"
+      autoplay="true"
+      autoplay-delay="2600"
+      autoplay-disable-on-interaction="false"
+      loop="true"
+      slides-per-view="1"
+      style="width: 100%; height: 600px"
     >
-      Search Rooms
-    </button>
-  </form>
+      <swiper-slide *ngFor="let img of slides">
+        <img [src]="img" alt="" class="slide-img contain" />
+      </swiper-slide>
+    </swiper-container>
 
-  <!-- Featured Rooms Section -->
-  <section>
-    <h2 class="text-3xl font-bold mb-6 text-center">Featured Rooms</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div class="hero-gradient"></div>
+    <img
+      src="assets/logo-green-valley.png"
+      alt=""
+      class="logo-watermark"
+      aria-hidden="true"
+    />
+  </div>
+
+  <div class="max-w-6xl mx-auto p-6">
+    <div
+      class="grid grid-cols-1 lg:grid-cols-1 gap-2 bg-white rounded-xl px-10 py-10"
+    >
+      <div class="mb-6">
+        <label class="block text-gray-700 font-normal italic font-serif mb-2"
+          >Booking Mode</label
+        >
+        <div class="flex space-x-6">
+          <label class="flex items-center font-serif space-x-2">
+            <input
+              type="radio"
+              name="bookingMode"
+              [(ngModel)]="bookingMode"
+              value="daily"
+              class="text-indigo-600"
+            />
+            <span>Daily</span>
+          </label>
+          <label class="flex items-center font-serif space-x-2">
+            <input
+              type="radio"
+              name="bookingMode"
+              [(ngModel)]="bookingMode"
+              value="hourly"
+              class="text-indigo-600"
+            />
+            <span>Hourly</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Daily Booking Form -->
+      <div class="grid grid-cols-2 gap-10">
+        <div *ngIf="bookingMode === 'daily'" class="mb-6 flex gap-10">
+          <div class="">
+            <label
+              class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-normal text-gray-600 absolute"
+              >Check-In Date</label
+            >
+            <input
+              type="date"
+              [(ngModel)]="checkInDate"
+              class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all duration-200 ease-in-out"
+            />
+          </div>
+          <div>
+            <label
+              class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-normal text-gray-600 absolute"
+              >Check-Out Date</label
+            >
+            <input
+              type="date"
+              [(ngModel)]="checkOutDate"
+              class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all duration-200 ease-in-out"
+            />
+          </div>
+        </div>
+
+        <!-- Hourly Booking Form -->
+        <div *ngIf="bookingMode === 'hourly'" class="flex gap-4 mb-6">
+          <div>
+            <label
+              class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute"
+              >Booking Date</label
+            >
+            <input
+              type="date"
+              [(ngModel)]="bookingDate"
+              class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            />
+          </div>
+          <div>
+            <label
+              class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute"
+              >Start Time</label
+            >
+            <input
+              type="time"
+              [(ngModel)]="startTime"
+              class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            />
+          </div>
+          <div>
+            <label
+              class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute"
+              >Duration (hours)</label
+            >
+            <input
+              type="number"
+              [(ngModel)]="durationHours"
+              min="1"
+              class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            />
+          </div>
+        </div>
+
+        <div class="mb-6 flex gap-10">
+          <div>
+            <label
+              class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute"
+              >Room Type</label
+            >
+            <select
+              [(ngModel)]="selectedRoomType"
+              class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            >
+              <option value="">-- Select --</option>
+              <option *ngFor="let room of featuredRooms" [value]="room.name">
+                {{ room.name }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Number of Members -->
+          <div class="mb-6">
+            <label
+              class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute"
+              >Number of Members</label
+            >
+            <input
+              type="number"
+              [(ngModel)]="numMembers"
+              min="1"
+              class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Search Button -->
+      <div class="flex justify-end items-end">
+        <button
+          (click)="onSearchRooms()"
+          class="w-40 bg-gradient-to-r from-green-900 via-emerald-800 to-green-900 hover:from-green-800 hover:via-emerald-700 hover:to-green-800 text-white font-semibold py-2 rounded-lg shadow-lg transition duration-500 ease-in-out"
+        >
+          Search Rooms
+        </button>
+      </div>
+    </div>
+
+    <!-- keep everything you already have ABOVE this line (form, etc.) -->
+
+    <hr class="my-8" />
+
+    <!-- Search Results ALWAYS ABOVE Featured -->
+    <div *ngIf="searchResults">
+      <h3 class="text-xl font-semibold mb-4 text-gray-800">
+        Search results
+        <span class="text-gray-500 text-sm">({{ searchResults.length }})</span>
+      </h3>
+
+      <div *ngIf="searchResults.length === 0" class="text-gray-600">
+        No rooms match your criteria.
+      </div>
+
       <div
-        *ngFor="let room of featuredRooms"
-        class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition"
+        *ngIf="searchResults.length > 0"
+        class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10"
       >
-        <!-- <img
-          src="assets/room-placeholder.jpg"
-          alt="{{ room.name }}"
-          class="w-full h-48 object-cover"
-        /> -->
-        <div class="p-6">
-          <h3 class="text-xl font-semibold mb-2">{{ room.name }}</h3>
-          <p class="text-gray-600 mb-4">{{ room.description }}</p>
-          <p class="font-semibold mb-4">Price: ${{ room.pricePerDay }} / day</p>
-          <a
-            routerLink="/customer/rooms"
-            class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-            >Book Now</a
+        <div
+          *ngFor="let room of searchResults"
+          class="border rounded-xl p-4 shadow hover:shadow-lg transition cursor-pointer"
+          (click)="viewRoom(room)"
+        >
+          <div
+            class="aspect-video w-full bg-gray-100 rounded mb-3 overflow-hidden"
           >
+            <img
+              [src]="room.main_image || 'assets/room-placeholder.jpg'"
+              [alt]="room.name"
+              class="w-full h-full object-cover"
+            />
+          </div>
+          <h5 class="text-lg font-bold mb-1">{{ room.name }}</h5>
+          <p class="text-gray-600 text-sm mb-2">{{ room.description }}</p>
+          <p class="text-indigo-600 font-semibold">{{ priceLabel(room) }}</p>
         </div>
       </div>
     </div>
-  </section>
+
+    <!-- Featured / Suggested -->
+    <h3 class="text-xl font-semibold mb-4 text-gray-800">Suggested for you</h3>
+
+    <div *ngIf="loading" class="text-gray-500">Loading rooms…</div>
+
+    <div
+      *ngIf="!loading && !error"
+      class="grid grid-cols-1 md:grid-cols-3 gap-6"
+    >
+      <div
+        *ngFor="let room of featuredRooms"
+        class="border rounded-xl p-4 shadow hover:shadow-lg transition cursor-pointer"
+        (click)="viewRoom(room)"
+      >
+        <div
+          class="aspect-video w-full bg-gray-100 rounded mb-3 overflow-hidden"
+        >
+          <img
+            [src]="room.main_image || 'assets/room-placeholder.jpg'"
+            [alt]="room.name"
+            class="w-full h-full object-cover"
+          />
+        </div>
+        <h5 class="text-lg font-bold mb-1">{{ room.name }}</h5>
+        <p class="text-gray-600 text-sm mb-2">{{ room.description }}</p>
+        <p class="text-green-600 font-semibold">{{ priceLabel(room) }}</p>
+      </div>
+    </div>
+  </div>
 </div>

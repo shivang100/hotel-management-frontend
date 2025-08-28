@@ -1,0 +1,104 @@
+/* --- Green Valley hero layout --- */
+.hero {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.slide-img {
+  width: 100%;
+  height: 70vh;
+  object-fit: cover;
+  display: block;
+}
+
+/* Bigger logo + left position */
+.logo-bar {
+  position: absolute;
+  top: 30%;
+  left: 24px;
+  /* ⬅️ left side */
+  transform: translateY(-50%);
+  /* center vertically */
+  z-index: 3;
+  padding: 12px 20px;
+}
+
+.logo-bar .brand {
+  height: 350px;
+  /* ⬅️ increase size (try 120px if you want bigger) */
+  display: block;
+}
+
+/* Optional: adjust on small screens */
+@media (max-width: 640px) {
+  .logo-bar {
+    left: 12px;
+  }
+
+  .logo-bar .brand {
+    height: 72px;
+  }
+}
+
+.hero-gradient {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(to top, rgba(0, 0, 0, .35), rgba(0, 0, 0, 0) 40%);
+  pointer-events: none;
+}
+
+.logo-watermark {
+  position: absolute;
+  right: 20px;
+  bottom: 18px;
+  width: 160px;
+  opacity: .08;
+  z-index: 2;
+  pointer-events: none;
+  animation: float 6s ease-in-out infinite;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .2));
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0) scale(1)
+  }
+
+  50% {
+    transform: translateY(-6px) scale(1.02)
+  }
+}
+
+/* --- Hide Swiper arrows & bullets (Shadow DOM parts) --- */
+swiper-container::part(button-prev),
+swiper-container::part(button-next),
+swiper-container::part(pagination),
+swiper-container::part(scrollbar) {
+  display: none !important;
+}
+
+/* (Extra safety) shrink built-in arrow size to zero */
+:root {
+  --swiper-navigation-size: 0px;
+}
+
+swiper-slide {
+  display: flex;
+  align-items: stretch;
+}
+
+/* Base image rules */
+.slide-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Cover: fill area, crop overflow */
+.slide-img.cover {
+  object-fit: cover;
+}

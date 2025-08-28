@@ -2,6 +2,19 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+export interface BillingSnapshot {
+  fullName: string;
+  email: string;
+  phone: string;
+  gstin?: string;
+  address1: string;
+  address2?: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+}
+
 export interface Booking {
   id?: number;
   room_id: number;
@@ -13,8 +26,13 @@ export interface Booking {
   duration_hours?: number;
   status?: string;
   customer_id?: number;
-}
+  room_name?: string;
+  room_type?: string;
+  room_main_image?: string;
 
+  // ⬇️ add this
+  billing?: BillingSnapshot;
+}
 @Injectable({
   providedIn: 'root',
 })
@@ -41,5 +59,8 @@ export class BookingService {
 
   deleteBooking(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+  getBookingsByCustomer(customerId: number) {
+    return this.http.get<Booking[]>(`${this.apiUrl}?customer_id=${customerId}`);
   }
 }

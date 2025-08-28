@@ -1,134 +1,85 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { CartService } from '../../services/cart.service';
-import { ToastService } from 'angular-toastify';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 
-interface Room {
-  id: number;
-  name: string;
-  description: string;
-  pricePerDay: number;
-  pricePerHour?: number;
-}
+import { CartService, BookingItem } from '../../services/cart.service';
+import { BookingService } from '../../services/booking.service';
+import { AuthService } from '../../services/auth.service';
+import { ToastService } from 'angular-toastify';
 
 @Component({
   selector: 'app-booking',
   templateUrl: './booking.component.html',
 })
-export class BookingComponent implements OnInit {
-  bookingMode: 'daily' | 'hourly' = 'daily';
-  checkInDate?: string;
-  checkOutDate?: string;
-  bookingDate?: string;
-  startTime?: string;
-  durationHours: number = 1;
-  selectedRoomType: string = '';
-  numMembers: number = 1;
-
-  fullName: string = '';
-  email: string = '';
-  phone: string = '';
-
-  roomId?: number;
-  room?: Room;
-
-  rooms: Room[] = [
-    {
-      id: 1,
-      name: 'Standard Room',
-      description: 'Comfortable room with basic amenities.',
-      pricePerDay: 100,
-      pricePerHour: 15,
-    },
-    {
-      id: 2,
-      name: 'Deluxe Room',
-      description: 'Larger room with premium facilities.',
-      pricePerDay: 180,
-      pricePerHour: 25,
-    },
-    {
-      id: 3,
-      name: 'Suite',
-      description: 'Luxury suite with separate living area.',
-      pricePerDay: 300,
-      pricePerHour: 40,
-    },
-  ];
+export class BookingComponent {
+  items: BookingItem[] = [];
+  placing = false;
 
   constructor(
-    private activatedRoute: ActivatedRoute,
-    private cartService: CartService,
+    private cart: CartService,
+    private bookingService: BookingService,
+    private auth: AuthService,
     private router: Router,
-    private toastService: ToastService
-  ) {}
-
-  ngOnInit(): void {
-    this.roomId = Number(this.activatedRoute.snapshot.paramMap.get('id'));
-    this.room = this.rooms.find((r) => r.id === this.roomId);
-
-    this.activatedRoute.queryParams.subscribe((params) => {
-      this.bookingMode = params['bookingMode'] || 'daily';
-      this.checkInDate = params['checkInDate'];
-      this.checkOutDate = params['checkOutDate'];
-      this.bookingDate = params['bookingDate'];
-      this.startTime = params['startTime'];
-      this.durationHours = +params['durationHours'] || 1;
-      this.selectedRoomType = params['selectedRoomType'] || '';
-      this.numMembers = +params['numMembers'] || 1;
-    });
+    private toast: ToastService
+  ) {
+    this.items = this.cart.getItems();
   }
 
-  onBook() {
-    if (!this.fullName.trim() || !this.email.trim() || !this.phone.trim()) {
-      this.toastService.error(
-        'Please provide your full name, email, and phone number.'
+  get total(): number {
+    return this.items.reduce((sum, i) => sum + (i.price || 0), 0);
+  }
+
+  async proceedToPayment() {
+    if (!this.items.length) {
+      this.toast.warn('Cart is empty');
+      return;
+    }
+
+    this.placing = true;
+
+    // Show loading toast (will auto-close after default time)
+    this.toast.info('⏳ Creating bookings, please wait...');
+
+    const customerId = this.auth.getUserId() ?? undefined;
+
+    try {
+      const created = await Promise.all(
+        this.items.map((i) =>
+          firstValueFrom(
+            this.bookingService.createBooking({
+              room_id: i.roomId,
+              booking_mode: i.bookingMode,
+              check_in_date: i.checkInDate,
+              check_out_date: i.checkOutDate,
+              booking_date: i.bookingDate,
+              start_time: i.startTime,
+              duration_hours: i.durationHours,
+              status: 'pending',
+              customer_id: customerId,
+            })
+          )
+        )
       );
-      return;
-    }
 
-    if (this.bookingMode === 'daily') {
-      if (!this.checkInDate || !this.checkOutDate) {
-        this.toastService.error('Please select check-in and check-out dates.');
+      const bookingIds = created
+        .map((b) => b?.id)
+        .filter((id): id is number => typeof id === 'number');
+
+      if (!bookingIds.length) {
+        this.toast.error('❌ Failed to create bookings.');
         return;
       }
-      if (new Date(this.checkInDate) > new Date(this.checkOutDate)) {
-        this.toastService.error('Check-out date must be after check-in date.');
-        return;
-      }
-    } else {
-      if (!this.bookingDate || !this.startTime || this.durationHours < 1) {
-        this.toastService.error('Please fill all hourly booking details.');
-        return;
-      }
+
+      this.router.navigate(['/customer/payment'], {
+        state: { bookingIds, amount: this.total },
+      });
+
+      this.toast.success('✅ Bookings created. Redirecting to payment...');
+    } catch (err) {
+      console.error(err);
+      this.toast.error('❌ Could not create bookings.');
+    } finally {
+      this.placing = false;
     }
-
-    if (!this.room) {
-      this.toastService.error('Selected room not found.');
-      return;
-    }
-
-    const item = {
-      roomId: this.room.id,
-      roomName: this.room.name,
-      bookingMode: this.bookingMode,
-      checkInDate: this.checkInDate,
-      checkOutDate: this.checkOutDate,
-      bookingDate: this.bookingDate,
-      startTime: this.startTime,
-      durationHours: this.durationHours,
-      numMembers: this.numMembers,
-      fullName: this.fullName,
-      email: this.email,
-      phone: this.phone,
-      price:
-        this.bookingMode === 'daily'
-          ? this.room.pricePerDay
-          : (this.room.pricePerHour || 0) * this.durationHours,
-    };
-
-    this.cartService.addItem(item);
-    this.toastService.success('Booking added to cart.');
-    this.router.navigate(['/customer/cart']);
   }
 }

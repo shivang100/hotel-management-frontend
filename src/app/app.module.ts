@@ -8,6 +8,9 @@ import { SharedModule } from './shared/shared.module';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
   declarations: [AppComponent],
@@ -17,6 +20,9 @@ import { HttpClientModule } from '@angular/common/http';
     AngularToastifyModule,
     SharedModule,
     HttpClientModule,
+    FormsModule,
+    BrowserAnimationsModule,
+    CommonModule,
   ],
   providers: [
     ToastService,

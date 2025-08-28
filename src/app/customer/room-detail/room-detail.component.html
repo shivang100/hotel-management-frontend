@@ -1,27 +1,177 @@
-<div class="max-w-3xl mx-auto p-6 bg-white rounded shadow">
-  <h1 class="text-3xl font-bold mb-4">{{ room?.name }}</h1>
-  <img
-    src="assets/room-placeholder.jpg"
-    alt="{{ room?.name }}"
-    class="w-full h-64 object-cover mb-4 rounded"
-  />
-  <p class="mb-4">{{ room?.description }}</p>
-  <p class="text-lg font-semibold mb-4">
-    Price: ${{ room?.pricePerDay }} per day
-  </p>
-  <p *ngIf="room?.pricePerHour" class="text-md font-medium mb-6">
-    Or ${{ room?.pricePerHour }} per hour
-  </p>
-  <button
-    [routerLink]="['/customer/booking', room?.id]"
-    class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-  >
-    Book This Room
-  </button>
-  <button
-    routerLink="/customer/rooms"
-    class="px-6 py-2 bg-gray-300 rounded hover:bg-gray-400"
-  >
-    Back to Catalog
-  </button>
+<div class="max-w-6xl mx-auto p-6">
+  <div *ngIf="loading" class="text-gray-500">Loading…</div>
+
+  <div *ngIf="!loading && room" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- LEFT: Gallery -->
+    <div>
+      <div
+        class="aspect-video w-full bg-gray-100 rounded-2xl overflow-hidden shadow"
+      >
+        <img
+          [src]="activeImage"
+          [alt]="room.name"
+          class="w-full h-full object-cover"
+        />
+      </div>
+
+      <div class="mt-4 grid grid-cols-4 gap-3">
+        <button
+          class="aspect-video bg-gray-100 rounded-lg overflow-hidden ring-0"
+          [ngClass]="{
+            'ring-2 ring-green-500':
+              activeImage === (room.main_image || 'assets/room-placeholder.jpg')
+          }"
+          (click)="setActive(room.main_image || 'assets/room-placeholder.jpg')"
+        >
+          <img
+            [src]="room.main_image || 'assets/room-placeholder.jpg'"
+            [alt]="room.name"
+            class="w-full h-full object-cover"
+          />
+        </button>
+
+        <button
+          *ngFor="let img of room.secondary_images"
+          class="aspect-video bg-gray-100 rounded-lg overflow-hidden ring-0"
+          [ngClass]="{ 'ring-2 ring-green-500': activeImage === img }"
+          (click)="setActive(img)"
+        >
+          <img
+            [src]="img"
+            [alt]="room.name"
+            class="w-full h-full object-cover"
+          />
+        </button>
+      </div>
+    </div>
+
+    <!-- RIGHT: Details & Booking -->
+    <div class="space-y-5">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <h1 class="text-3xl font-extrabold text-gray-900">{{ room.name }}</h1>
+          <p class="mt-1 text-sm text-slate-600">{{ room.room_type }}</p>
+        </div>
+        <div class="text-right">
+          <div class="text-2xl font-bold text-green-800">
+            {{ priceLabel() }}
+          </div>
+          <div
+            *ngIf="estimatedTotal() as total"
+            class="text-sm text-emerald-700 mt-1"
+          >
+            Estimated total: <span class="font-semibold">₹{{ total }}</span>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-gray-700 leading-relaxed">{{ room.description }}</p>
+
+      <!-- Mode -->
+      <div>
+        <label class="block text-gray-800 font-semibold mb-2"
+          >Booking Mode</label
+        >
+        <div class="flex gap-6">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              [(ngModel)]="bookingMode"
+              value="daily"
+              class="text-indigo-600"
+            />
+            <span>Daily</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              [(ngModel)]="bookingMode"
+              value="hourly"
+              class="text-indigo-600"
+            />
+            <span>Hourly</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Daily form -->
+      <div
+        *ngIf="bookingMode === 'daily'"
+        class="grid grid-cols-1 md:grid-cols-2 gap-4"
+      >
+        <div>
+          <label class="block text-gray-700 mb-1">Check-In Date</label>
+          <input
+            type="date"
+            [(ngModel)]="checkInDate"
+            [min]="todayStr"
+            class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          />
+        </div>
+        <div>
+          <label class="block text-gray-700 mb-1">Check-Out Date</label>
+          <input
+            type="date"
+            [(ngModel)]="checkOutDate"
+            [min]="checkoutMinDate"
+            class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          />
+        </div>
+      </div>
+
+      <!-- Hourly form -->
+      <div
+        *ngIf="bookingMode === 'hourly'"
+        class="grid grid-cols-1 md:grid-cols-3 gap-4"
+      >
+        <div>
+          <label class="block text-gray-700 mb-1">Booking Date</label>
+          <input
+            type="date"
+            [(ngModel)]="bookingDate"
+            [min]="todayStr"
+            class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          />
+        </div>
+        <div>
+          <label class="block text-gray-700 mb-1">Start Time</label>
+          <input
+            type="time"
+            [(ngModel)]="startTime"
+            class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          />
+        </div>
+        <div>
+          <label class="block text-gray-700 mb-1">Duration (hours)</label>
+          <input
+            type="number"
+            [(ngModel)]="durationHours"
+            min="1"
+            class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          />
+        </div>
+      </div>
+
+      <!-- Members -->
+      <div>
+        <label class="block text-gray-700 mb-1">Number of Members</label>
+        <input
+          type="number"
+          [(ngModel)]="numMembers"
+          min="1"
+          max="2"
+          class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        />
+      </div>
+
+      <div class="pt-2">
+        <button
+          class="bg-gradient-to-r from-green-900 via-emerald-800 to-green-900 hover:from-green-800 hover:via-emerald-700 hover:to-green-800 text-white font-semibold px-6 py-2 rounded-lg shadow"
+          (click)="goToPayment()"
+        >
+          Book Now
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

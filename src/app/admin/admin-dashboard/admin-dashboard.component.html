@@ -1,67 +1,144 @@
-<div class="flex justify-center items-center py-10">
-  <h1 class="text-3xl font-bold mb-6">Admin Dashboard</h1>
-</div>
-<!-- KPI Cards -->
-<div class="grid grid-cols-4 max-w-6xl mx-auto gap-6 mb-10">
-  <div class="bg-blue-100 p-6 rounded-lg shadow text-center">
-    <div class="text-xl font-semibold mb-2">Total Rooms</div>
-    <div class="text-3xl font-bold">{{ totalRooms }}</div>
-  </div>
-  <div class="bg-green-100 p-6 rounded-lg shadow text-center">
-    <div class="text-xl font-semibold mb-2">Total Bookings</div>
-    <div class="text-3xl font-bold">{{ totalBookings }}</div>
-  </div>
-  <div class="bg-yellow-100 p-6 rounded-lg shadow text-center">
-    <div class="text-xl font-semibold mb-2">Total Customers</div>
-    <div class="text-3xl font-bold">{{ totalCustomers }}</div>
-  </div>
-  <div class="bg-purple-100 p-6 rounded-lg shadow text-center">
-    <div class="text-xl font-semibold mb-2">Revenue This Month</div>
-    <div class="text-3xl font-bold">${{ revenueThisMonth }}</div>
-  </div>
-</div>
-
-<div
-  class="flex flex-cols max-w-6xl mx-auto justify-between p-6 bg-white rounded shadow"
->
-  <!-- Recent Bookings Table -->
-  <div class="mb-10">
-    <h2 class="text-2xl font-semibold mb-4">Recent Bookings</h2>
-    <table class="w-full table-auto border-collapse border border-gray-300">
-      <thead>
-        <tr class="bg-gray-200">
-          <th class="border border-gray-300 p-2">ID</th>
-          <th class="border border-gray-300 p-2">Customer</th>
-          <th class="border border-gray-300 p-2">Status</th>
-          <th class="border border-gray-300 p-2">Check-In</th>
-          <th class="border border-gray-300 p-2">Check-Out</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let booking of getRecentBookings()">
-          <td class="border border-gray-300 p-2">{{ booking.id }}</td>
-          <td class="border border-gray-300 p-2">{{ booking.customerName }}</td>
-          <td class="border border-gray-300 p-2 capitalize">
-            {{ booking.status }}
-          </td>
-          <td class="border border-gray-300 p-2">{{ booking.checkInDate }}</td>
-          <td class="border border-gray-300 p-2">{{ booking.checkOutDate }}</td>
-        </tr>
-      </tbody>
-    </table>
+<div class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <h1 class="text-3xl font-bold text-slate-800">Admin Dashboard</h1>
+    <button
+      class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-black text-white"
+      (click)="refresh(true)"
+    >
+      Refresh
+    </button>
   </div>
 
-  <!-- Booking Status Pie Chart -->
-  <div>
-    <h2 class="text-2xl font-semibold mb-4">Booking Status Overview</h2>
-    <div class="h-[400px] w-[400px]">
-      <canvas
-        baseChart
-        [data]="bookingStatusChartData"
-        [labels]="bookingStatusChartLabels"
-        [type]="bookingStatusChartType"
+  <!-- KPI Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <div class="bg-white rounded-xl shadow border p-5">
+      <div class="text-sm text-slate-500">Total Rooms</div>
+      <div class="mt-2 text-3xl font-bold text-slate-800">{{ totalRooms }}</div>
+    </div>
+    <div class="bg-white rounded-xl shadow border p-5">
+      <div class="text-sm text-slate-500">Total Bookings</div>
+      <div class="mt-2 text-3xl font-bold text-slate-800">
+        {{ totalBookings }}
+      </div>
+    </div>
+    <div class="bg-white rounded-xl shadow border p-5">
+      <div class="text-sm text-slate-500">Total Customers</div>
+      <div class="mt-2 text-3xl font-bold text-slate-800">
+        {{ totalCustomers }}
+      </div>
+    </div>
+    <div class="bg-white rounded-xl shadow border p-5">
+      <div class="text-sm text-slate-500">Revenue This Month</div>
+      <div class="mt-2 text-3xl font-bold text-emerald-700">
+        ₹{{ revenueThisMonth | number }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Content Row -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Recent Bookings -->
+    <div class="bg-white rounded-xl shadow border p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-semibold text-slate-800">Recent Bookings</h2>
+        <div class="text-sm text-slate-500" *ngIf="loading">Loading…</div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="min-w-full table-auto">
+          <thead>
+            <tr class="bg-slate-50 text-left">
+              <th class="px-3 py-2 text-sm font-medium text-slate-600">ID</th>
+              <th class="px-3 py-2 text-sm font-medium text-slate-600">
+                Customer
+              </th>
+              <th class="px-3 py-2 text-sm font-medium text-slate-600">Room</th>
+              <th class="px-3 py-2 text-sm font-medium text-slate-600">
+                Status
+              </th>
+              <th class="px-3 py-2 text-sm font-medium text-slate-600">
+                Check-In
+              </th>
+              <th class="px-3 py-2 text-sm font-medium text-slate-600">
+                Check-Out
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y">
+            <tr *ngFor="let b of recentBookings">
+              <td class="px-3 py-2">{{ b.id }}</td>
+              <td class="px-3 py-2">
+                {{ b.billing?.fullName }}
+              </td>
+              <td class="px-3 py-2">
+                {{ b.room_name || "Room #" + b.room_id }}
+                <div
+                  class="text-xs text-slate-500 flex items-center gap-2"
+                  *ngIf="b.room_type"
+                >
+                  <span>{{ b.room_type }}</span>
+                  <span
+                    class="inline-flex items-center px-2 py-0.5 rounded-full ring-1 text-[10px]"
+                    [ngClass]="
+                      b.booking_mode === 'daily'
+                        ? 'bg-emerald-50 text-emerald-700 ring-emerald-200'
+                        : 'bg-amber-50 text-amber-700 ring-amber-200'
+                    "
+                  >
+                    {{ b.booking_mode | uppercase }}
+                  </span>
+                </div>
+              </td>
+              <td class="px-3 py-2">
+                <span
+                  class="inline-flex items-center px-2 py-1 rounded-full ring-1 text-xs font-medium"
+                  [ngClass]="statusBadgeClasses(b.status)"
+                >
+                  {{ b.status || "—" }}
+                </span>
+              </td>
+
+              <!-- ✅ Use helpers so both daily & hourly show correctly -->
+              <td class="px-3 py-2">{{ checkInDisplay(b) }}</td>
+              <td class="px-3 py-2">{{ checkOutDisplay(b) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div
+        *ngIf="!loading && recentBookings.length === 0"
+        class="text-slate-500 text-sm mt-4"
       >
-      </canvas>
+        No recent bookings found.
+      </div>
+    </div>
+
+    <!-- Booking Status Pie -->
+    <div class="bg-white rounded-xl shadow border p-5">
+      <h2 class="text-xl font-semibold text-slate-800 mb-4">
+        Booking Status Overview
+      </h2>
+      <div class="h-[380px] flex items-center justify-center">
+        <canvas
+          baseChart
+          [type]="bookingStatusChartType"
+          [data]="bookingStatusChartData"
+          [options]="bookingStatusChartOptions"
+        ></canvas>
+      </div>
+      <div class="flex gap-4 justify-center text-sm text-slate-600 mt-3">
+        <div>
+          Confirmed: <b>{{ statusCounts["confirmed"] || 0 }}</b>
+        </div>
+        <div>
+          Pending: <b>{{ statusCounts["pending"] || 0 }}</b>
+        </div>
+        <div>
+          Cancelled: <b>{{ statusCounts["cancelled"] || 0 }}</b>
+        </div>
+      </div>
     </div>
   </div>
 </div>

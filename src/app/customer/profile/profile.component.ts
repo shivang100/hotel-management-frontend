@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService, User } from '../../services/auth.service';
 import { ToastService } from 'angular-toastify';
 
 @Component({
@@ -6,41 +7,94 @@ import { ToastService } from 'angular-toastify';
   templateUrl: './profile.component.html',
 })
 export class ProfileComponent implements OnInit {
-  editMode = false;
+  user: User | null = null;
+  initials = 'U';
+  joinedDate = '-';
+  lastLogin = '-';
 
-  profile = {
-    fullName: 'John Doe',
-    email: 'john@example.com',
-    phone: '1234567890',
-    address: '',
-    city: '',
-    state: '',
-    postalCode: '',
+  prefs = {
+    emailNotifications: true,
+    smsAlerts: false,
+    darkMode: false,
   };
 
-  constructor(private toastService: ToastService) {}
+  constructor(
+    private auth: AuthService,
+    private toast: ToastService // ✅ inject toast
+  ) {}
 
   ngOnInit(): void {
-    // Optionally load from backend or localStorage here
-  }
+    this.user = this.auth.getUser();
+    this.initials = this.makeInitials(
+      this.user?.username || this.user?.email || 'U'
+    );
 
-  onEdit() {
-    this.editMode = true;
-  }
-
-  onCancel() {
-    this.editMode = false;
-    // Optionally reload profile to discard changes
-  }
-
-  onSave() {
-    if (!this.profile.fullName || !this.profile.email || !this.profile.phone) {
-      this.toastService.error('Full Name, Email, and Phone are required.');
-      return;
+    const storedJoined = localStorage.getItem('joined_at');
+    if (!storedJoined) {
+      const now = new Date().toISOString();
+      localStorage.setItem('joined_at', now);
+      this.joinedDate = this.formatDate(now);
+    } else {
+      this.joinedDate = this.formatDate(storedJoined);
     }
-    // Save to backend or localStorage here
 
-    this.editMode = false;
-    this.toastService.success('Profile saved successfully.');
+    const last = localStorage.getItem('last_login_at');
+    if (last) this.lastLogin = this.formatDateTime(last);
+
+    const saved = localStorage.getItem('profile_prefs');
+    if (saved) {
+      try {
+        this.prefs = { ...this.prefs, ...JSON.parse(saved) };
+      } catch {}
+    }
+  }
+
+  savePrefs() {
+    localStorage.setItem('profile_prefs', JSON.stringify(this.prefs));
+    this.toast.success('✅ Preferences saved'); // ✅ toast instead of alert
+  }
+
+  logout() {
+    this.auth.logout();
+    this.toast.info('👋 Logged out'); // ✅ feedback
+  }
+
+  logoutOthers() {
+    // placeholder for API call to revoke other sessions
+    this.toast.warn('⚠️ Other sessions logged out (demo)'); // ✅ toast instead of alert
+  }
+
+  // -------- helpers --------
+  private makeInitials(text: string) {
+    return (
+      text
+        .split(/\s+|@/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((s) => s[0].toUpperCase())
+        .join('') || 'U'
+    );
+  }
+
+  private formatDate(iso?: string) {
+    if (!iso) return '-';
+    const d = new Date(iso);
+    return d.toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: '2-digit',
+    });
+  }
+
+  private formatDateTime(iso?: string) {
+    if (!iso) return '-';
+    const d = new Date(iso);
+    return d.toLocaleString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   }
 }

@@ -1,83 +1,282 @@
-<div class="max-w-4xl mx-auto p-6 bg-white rounded shadow">
-  <h1 class="text-3xl font-bold mb-6">Edit Room: {{ room?.name }}</h1>
-
-  <form
-    (submit)="saveRoom(); $event.preventDefault()"
-    class="space-y-4"
-    *ngIf="room"
+<div class="max-w-7xl mx-auto px-6 py-8 space-y-8">
+  <!-- Header -->
+  <div
+    class="rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-700 text-white p-6 shadow"
   >
-    <input
-      type="text"
-      [(ngModel)]="room.name"
-      name="name"
-      placeholder="Room Name"
-      required
-      class="border rounded p-2 w-full"
-    />
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">
+          Edit Room
+        </h1>
+        <p class="text-emerald-100 mt-1">
+          Update details, pricing and images for your room.
+        </p>
+      </div>
 
-    <textarea
-      [(ngModel)]="room.description"
-      name="description"
-      placeholder="Description"
-      required
-      class="border rounded p-2 w-full"
-    ></textarea>
-
-    <input
-      type="number"
-      [(ngModel)]="room.pricePerDay"
-      name="pricePerDay"
-      placeholder="Price per Day"
-      required
-      min="0"
-      class="border rounded p-2 w-full"
-    />
-
-    <input
-      type="number"
-      [(ngModel)]="room.pricePerHour"
-      name="pricePerHour"
-      placeholder="Price per Hour"
-      min="0"
-      class="border rounded p-2 w-full"
-    />
-
-    <label>Main Image (required)</label>
-    <img
-      *ngIf="room.mainImage"
-      [src]="room.mainImage"
-      alt="Main Image"
-      width="150"
-      class="mb-2"
-    />
-    <input
-      type="file"
-      (change)="onMainImageSelected($event)"
-      accept="image/*"
-      required
-    />
-
-    <label>Secondary Images</label>
-    <div class="flex space-x-2 mb-2">
-      <img
-        *ngFor="let img of room.secondaryImages"
-        [src]="img"
-        alt="Secondary Image"
-        width="100"
-      />
+      <a
+        routerLink="/admin/rooms"
+        class="inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-white ring-1 ring-white/20 hover:bg-white/20 active:scale-[0.98]"
+      >
+        Back to list
+      </a>
     </div>
-    <input
-      type="file"
-      (change)="onSecondaryImagesSelected($event)"
-      accept="image/*"
-      multiple
-    />
+  </div>
 
-    <button
-      type="submit"
-      class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+  <div *ngIf="room" class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+    <!-- Form Card -->
+    <div
+      class="lg:col-span-3 rounded-2xl bg-white border shadow-sm overflow-hidden ring-1 ring-emerald-50"
     >
-      Save
-    </button>
-  </form>
+      <div class="border-b px-6 py-4">
+        <h2 class="text-lg font-semibold text-slate-800">Room Details</h2>
+      </div>
+
+      <form
+        (submit)="saveRoom(); $event.preventDefault()"
+        class="p-6 space-y-5"
+      >
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1"
+              >Room Name *</label
+            >
+            <input
+              [(ngModel)]="room.name"
+              name="name"
+              type="text"
+              placeholder="e.g., Ocean View Suite"
+              class="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-500"
+              required
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1"
+              >Room Type *</label
+            >
+            <select
+              [(ngModel)]="room.room_type"
+              name="roomType"
+              class="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-500"
+              required
+            >
+              <option *ngFor="let t of room_types" [ngValue]="t">
+                {{ t }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1"
+            >Description *</label
+          >
+          <textarea
+            [(ngModel)]="room.description"
+            name="description"
+            rows="4"
+            placeholder="Short, premium-friendly description..."
+            class="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-500"
+            required
+          ></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1"
+              >Price / Day (₹) *</label
+            >
+            <input
+              [(ngModel)]="room.price_per_day"
+              name="pricePerDay"
+              type="number"
+              min="0"
+              class="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-500"
+              required
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1"
+              >Price / Hour (₹)</label
+            >
+            <input
+              [(ngModel)]="room.price_per_hour"
+              name="pricePerHour"
+              type="number"
+              min="0"
+              class="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-500"
+            />
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3 pt-2">
+          <button
+            type="submit"
+            class="inline-flex items-center justify-center rounded-xl bg-emerald-600 px-5 py-2.5 font-semibold text-white shadow hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-200 active:scale-[0.99]"
+            [disabled]="saving"
+          >
+            {{ saving ? "Saving…" : "Save Changes" }}
+          </button>
+
+          <button
+            type="button"
+            class="inline-flex items-center justify-center rounded-xl bg-rose-600 px-5 py-2.5 font-semibold text-white shadow hover:bg-rose-700 focus:outline-none focus:ring-4 focus:ring-rose-200 active:scale-[0.99]"
+            (click)="deleteThisRoom()"
+            [disabled]="deleting"
+          >
+            {{ deleting ? "Deleting…" : "Delete Room" }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Image Card -->
+    <div class="lg:col-span-2 space-y-6">
+      <!-- Main image -->
+      <div
+        class="rounded-2xl bg-white border shadow-sm overflow-hidden ring-1 ring-emerald-50"
+      >
+        <div class="border-b px-6 py-3">
+          <h3 class="text-sm font-semibold text-slate-800">Main Image *</h3>
+        </div>
+
+        <div class="p-6 space-y-4">
+          <label
+            class="flex cursor-pointer items-center justify-center rounded-xl border-2 border-dashed p-6 text-slate-500 hover:border-emerald-300 hover:text-emerald-700 transition"
+          >
+            <input
+              type="file"
+              class="hidden"
+              accept="image/*"
+              (change)="onMainImageSelected($event)"
+            />
+            <div class="text-center">
+              <svg
+                class="mx-auto h-8 w-8"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 16l5-5 4 4 5-6 4 5"
+                />
+              </svg>
+              <div class="mt-2 text-sm">Click to upload</div>
+              <div class="text-xs text-slate-400">PNG, JPG up to ~5MB</div>
+            </div>
+          </label>
+
+          <div *ngIf="mainPreview" class="mt-2">
+            <img
+              [src]="mainPreview"
+              alt="Main preview"
+              class="h-48 w-full object-cover rounded-lg shadow-sm ring-1 ring-emerald-100"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Secondary images -->
+      <div
+        class="rounded-2xl bg-white border shadow-sm overflow-hidden ring-1 ring-emerald-50"
+      >
+        <div class="border-b px-6 py-3">
+          <h3 class="text-sm font-semibold text-slate-800">
+            Secondary Images (min 2) *
+          </h3>
+        </div>
+
+        <div class="p-6 space-y-4">
+          <label
+            class="flex cursor-pointer items-center justify-center rounded-xl border-2 border-dashed p-6 text-slate-500 hover:border-emerald-300 hover:text-emerald-700 transition"
+          >
+            <input
+              type="file"
+              class="hidden"
+              accept="image/*"
+              multiple
+              (change)="onSecondaryImagesSelected($event)"
+            />
+            <div class="text-center">
+              <svg
+                class="mx-auto h-8 w-8"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+              <div class="mt-2 text-sm">Add more images</div>
+              <div class="text-xs text-slate-400">PNG, JPG up to ~5MB</div>
+            </div>
+          </label>
+
+          <div
+            *ngIf="secondaryPreviews.length"
+            class="grid grid-cols-2 sm:grid-cols-3 gap-3"
+          >
+            <div
+              *ngFor="let src of secondaryPreviews; let i = index"
+              class="relative group"
+            >
+              <img
+                [src]="src"
+                class="h-28 w-full object-cover rounded-lg shadow-sm ring-1 ring-emerald-100"
+                alt="Secondary"
+              />
+              <button
+                type="button"
+                class="absolute top-2 right-2 hidden group-hover:flex items-center justify-center h-7 w-7 rounded-full bg-rose-600/90 text-white shadow hover:bg-rose-700"
+                (click)="removeSecondaryAt(i)"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+
+          <p
+            class="text-xs text-slate-500"
+            *ngIf="(room?.secondary_images?.length || 0) < 2"
+          >
+            Tip: add at least 2 images for a richer gallery experience.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <div *ngIf="!room" class="text-slate-500">Loading room…</div>
+</div>
+<!-- Confirm Popup -->
+<div
+  *ngIf="showConfirm"
+  class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50"
+>
+  <div class="bg-white rounded-xl shadow-xl p-6 w-96 text-center">
+    <h2 class="text-lg font-semibold text-gray-800 mb-4">Confirm Action</h2>
+    <p class="text-gray-600 mb-6">{{ confirmText }}</p>
+    <div class="flex justify-center gap-4">
+      <button
+        (click)="runConfirm()"
+        class="px-5 py-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition"
+      >
+        Yes, Delete
+      </button>
+      <button
+        (click)="closeConfirm()"
+        class="px-5 py-2 bg-gray-200 text-gray-700 rounded-lg shadow hover:bg-gray-300 transition"
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
 </div>

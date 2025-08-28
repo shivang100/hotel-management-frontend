@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { CustomerRoutingModule } from './customer-routing.module';
@@ -13,6 +13,7 @@ import { PaymentComponent } from './payment/payment.component';
 import { BookingsComponent } from './bookings/bookings.component';
 import { SharedModule } from '../shared/shared.module';
 import { ProfileComponent } from './profile/profile.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,13 @@ import { ProfileComponent } from './profile/profile.component';
     BookingsComponent,
     ProfileComponent,
   ],
-  imports: [CommonModule, FormsModule, SharedModule, CustomerRoutingModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    SharedModule,
+    CustomerRoutingModule,
+    ReactiveFormsModule,
+  ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class CustomerModule {}

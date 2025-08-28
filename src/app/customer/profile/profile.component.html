@@ -1,116 +1,229 @@
-<div class="max-w-3xl mx-auto p-6 bg-white rounded shadow">
-  <h1 class="text-3xl font-bold mb-6">My Profile</h1>
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  <!-- Soft glow backdrop -->
+  <div
+    class="absolute inset-x-0 -top-10 mx-auto h-64 max-w-4xl blur-3xl opacity-30 -z-10 bg-gradient-to-r from-green-300 via-emerald-300 to-green-400 rounded-3xl"
+  ></div>
 
-  <div *ngIf="!editMode">
-    <p><strong>Full Name:</strong> {{ profile.fullName }}</p>
-    <p><strong>Email:</strong> {{ profile.email }}</p>
-    <p><strong>Phone:</strong> {{ profile.phone }}</p>
-
-    <p *ngIf="profile.address">
-      <strong>Address:</strong> {{ profile.address }}
-    </p>
-    <p *ngIf="profile.city"><strong>City:</strong> {{ profile.city }}</p>
-    <p *ngIf="profile.state"><strong>State:</strong> {{ profile.state }}</p>
-    <p *ngIf="profile.postalCode">
-      <strong>Postal Code:</strong> {{ profile.postalCode }}
-    </p>
-
-    <button
-      (click)="onEdit()"
-      class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+  <div *ngIf="user; else notLoggedIn">
+    <!-- Profile header -->
+    <section
+      class="bg-white/80 backdrop-blur border shadow-xl rounded-3xl p-6 md:p-10"
     >
-      Edit Profile
-    </button>
+      <div
+        class="flex flex-col md:flex-row md:items-center md:justify-between gap-6"
+      >
+        <div class="flex items-center gap-5">
+          <div
+            class="h-20 w-20 md:h-24 md:w-24 rounded-full bg-gradient-to-br from-green-600 to-emerald-600 flex items-center justify-center text-white text-3xl font-semibold shadow-lg"
+          >
+            {{ initials }}
+          </div>
+          <div>
+            <h1
+              class="text-2xl md:text-3xl font-bold tracking-tight text-gray-900"
+            >
+              {{ user.username }}
+            </h1>
+            <p
+              class="text-gray-600 mt-1 text-sm md:text-base flex flex-wrap items-center gap-x-2"
+            >
+              <span class="font-medium text-gray-700">User ID:</span>
+              {{ user.id }}
+              <span class="text-gray-400">·</span>
+              <span class="font-medium text-gray-700">Role:</span>
+              {{ user.role || "customer" }}
+              <ng-container *ngIf="user.email">
+                <span class="text-gray-400">·</span>
+                <span class="font-medium text-gray-700">Email:</span>
+                {{ user.email }}
+              </ng-container>
+            </p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-3">
+          <button class="px-4 py-2 rounded-xl border hover:bg-gray-50">
+            Edit Profile
+          </button>
+          <a
+            routerLink="/bookings"
+            class="px-4 py-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700"
+          >
+            Manage Bookings
+          </a>
+          <button
+            (click)="logout()"
+            class="px-4 py-2 rounded-xl border hover:bg-red-50 text-red-600 border-red-200"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick badges -->
+      <div class="mt-6 flex flex-wrap gap-2">
+        <span
+          class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100"
+        >
+          Verified Email
+        </span>
+        <span
+          class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-50 text-green-700 border border-green-100"
+        >
+          Member
+        </span>
+      </div>
+    </section>
+
+    <!-- Details grid -->
+    <section class="mt-8 grid md:grid-cols-3 gap-6">
+      <!-- Account details -->
+      <div class="md:col-span-2 bg-white border rounded-2xl shadow p-6">
+        <h2 class="text-lg font-semibold">Account Details</h2>
+        <div class="mt-4 grid sm:grid-cols-2 gap-4">
+          <div class="rounded-xl border bg-gray-50 p-4">
+            <div class="text-xs uppercase tracking-wide text-gray-500">
+              Username
+            </div>
+            <div class="font-medium text-gray-900">{{ user.username }}</div>
+          </div>
+          <div class="rounded-xl border bg-gray-50 p-4">
+            <div class="text-xs uppercase tracking-wide text-gray-500">
+              Email
+            </div>
+            <div class="font-medium text-gray-900">{{ user.email || "-" }}</div>
+          </div>
+          <div class="rounded-xl border bg-gray-50 p-4">
+            <div class="text-xs uppercase tracking-wide text-gray-500">
+              Role
+            </div>
+            <div class="font-medium text-gray-900 capitalize">
+              {{ user.role || "customer" }}
+            </div>
+          </div>
+          <div class="rounded-xl border bg-gray-50 p-4">
+            <div class="text-xs uppercase tracking-wide text-gray-500">
+              Joined
+            </div>
+            <div class="font-medium text-gray-900">{{ joinedDate }}</div>
+          </div>
+        </div>
+
+        <div class="mt-6 flex flex-wrap gap-3">
+          <button class="px-4 py-2 rounded-xl border hover:bg-gray-50">
+            Change Password
+          </button>
+          <button class="px-4 py-2 rounded-xl border hover:bg-gray-50">
+            Update Email
+          </button>
+          <button class="px-4 py-2 rounded-xl border hover:bg-gray-50">
+            Two-factor Auth
+          </button>
+        </div>
+      </div>
+
+      <!-- Preferences / security -->
+      <div class="space-y-6">
+        <div class="bg-white border rounded-2xl shadow p-6">
+          <h3 class="text-lg font-semibold">Preferences</h3>
+          <div class="mt-4 space-y-3">
+            <label class="flex items-center justify-between">
+              <span class="text-gray-700">Email Notifications</span>
+              <input
+                type="checkbox"
+                class="toggle"
+                [(ngModel)]="prefs.emailNotifications"
+              />
+            </label>
+            <label class="flex items-center justify-between">
+              <span class="text-gray-700">SMS Alerts</span>
+              <input
+                type="checkbox"
+                class="toggle"
+                [(ngModel)]="prefs.smsAlerts"
+              />
+            </label>
+            <label class="flex items-center justify-between">
+              <span class="text-gray-700">Dark Mode</span>
+              <input
+                type="checkbox"
+                class="toggle"
+                [(ngModel)]="prefs.darkMode"
+              />
+            </label>
+          </div>
+          <button
+            class="mt-4 w-full px-4 py-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700"
+            (click)="savePrefs()"
+          >
+            Save Preferences
+          </button>
+        </div>
+
+        <div class="bg-white border rounded-2xl shadow p-6">
+          <h3 class="text-lg font-semibold">Security</h3>
+          <ul class="mt-4 space-y-3 text-sm">
+            <li class="flex items-center justify-between">
+              <span class="text-gray-700">Last Login</span>
+              <span class="font-medium">{{ lastLogin }}</span>
+            </li>
+            <li class="flex items-center justify-between">
+              <span class="text-gray-700">Active Sessions</span>
+              <span class="font-medium">1</span>
+            </li>
+          </ul>
+          <button
+            class="mt-4 w-full px-4 py-2 rounded-xl border hover:bg-gray-50"
+            (click)="logoutOthers()"
+          >
+            Logout Other Sessions
+          </button>
+        </div>
+      </div>
+    </section>
   </div>
 
-  <form *ngIf="editMode" (ngSubmit)="onSave()" class="space-y-4">
-    <div>
-      <label class="block mb-1 font-medium">Full Name</label>
-      <input
-        type="text"
-        [(ngModel)]="profile.fullName"
-        name="fullName"
-        required
-        class="border rounded w-full px-3 py-2"
-      />
+  <ng-template #notLoggedIn>
+    <div class="bg-white border rounded-2xl shadow p-10 text-center">
+      <h2 class="text-xl font-semibold mb-2">
+        Please log in to see your profile
+      </h2>
+      <p class="text-gray-600">
+        Your account details will appear here once you sign in.
+      </p>
     </div>
-
-    <div>
-      <label class="block mb-1 font-medium">Email</label>
-      <input
-        type="email"
-        [(ngModel)]="profile.email"
-        name="email"
-        required
-        class="border rounded w-full px-3 py-2"
-      />
-    </div>
-
-    <div>
-      <label class="block mb-1 font-medium">Phone</label>
-      <input
-        type="tel"
-        [(ngModel)]="profile.phone"
-        name="phone"
-        required
-        class="border rounded w-full px-3 py-2"
-      />
-    </div>
-
-    <div>
-      <label class="block mb-1 font-medium">Address</label>
-      <input
-        type="text"
-        [(ngModel)]="profile.address"
-        name="address"
-        class="border rounded w-full px-3 py-2"
-      />
-    </div>
-
-    <div class="grid grid-cols-3 gap-4">
-      <div>
-        <label class="block mb-1 font-medium">City</label>
-        <input
-          type="text"
-          [(ngModel)]="profile.city"
-          name="city"
-          class="border rounded w-full px-3 py-2"
-        />
-      </div>
-      <div>
-        <label class="block mb-1 font-medium">State</label>
-        <input
-          type="text"
-          [(ngModel)]="profile.state"
-          name="state"
-          class="border rounded w-full px-3 py-2"
-        />
-      </div>
-      <div>
-        <label class="block mb-1 font-medium">Postal Code</label>
-        <input
-          type="text"
-          [(ngModel)]="profile.postalCode"
-          name="postalCode"
-          class="border rounded w-full px-3 py-2"
-        />
-      </div>
-    </div>
-
-    <div class="flex space-x-4 mt-4">
-      <button
-        type="submit"
-        class="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-      >
-        Save
-      </button>
-      <button
-        type="button"
-        (click)="onCancel()"
-        class="px-6 py-2 bg-gray-400 rounded hover:bg-gray-500"
-      >
-        Cancel
-      </button>
-    </div>
-  </form>
+  </ng-template>
 </div>
+
+<style>
+  .toggle {
+    appearance: none;
+    width: 44px;
+    height: 24px;
+    border-radius: 9999px;
+    border: 1px solid #e5e7eb;
+    background: #f3f4f6;
+    position: relative;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .toggle:checked {
+    background: #111827;
+    border-color: #111827;
+  }
+  .toggle::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    border-radius: 9999px;
+    background: white;
+    transition: 0.2s;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  .toggle:checked::after {
+    left: 22px;
+  }
+</style>

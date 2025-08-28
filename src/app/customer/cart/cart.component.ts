@@ -1,29 +1,46 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CartService, BookingItem } from '../../services/cart.service';
-import { Router } from '@angular/router';
+import { BookingService } from '../../services/booking.service';
 
 @Component({
   selector: 'app-cart',
   templateUrl: './cart.component.html',
 })
-export class CartComponent implements OnInit {
+export class CartComponent {
   items: BookingItem[] = [];
 
-  constructor(private cartService: CartService, private router: Router) {}
-
-  ngOnInit(): void {
+  constructor(
+    private cartService: CartService,
+    private bookingService: BookingService
+  ) {
     this.items = this.cartService.getItems();
   }
 
-  removeItem(index: number) {
-    this.cartService.removeItem(index);
+  removeItem(i: number) {
+    this.cartService.removeItem(i);
     this.items = this.cartService.getItems();
   }
 
-  getTotalPrice(): number {
-    return this.items.reduce((acc, item) => acc + item.price, 0);
-  }
-  goToPayment() {
-    this.router.navigate(['/customer/payment']);
+  checkout() {
+    for (const item of this.items) {
+      this.bookingService
+        .createBooking({
+          room_id: item.roomId,
+          booking_mode: item.bookingMode,
+          check_in_date: item.checkInDate,
+          check_out_date: item.checkOutDate,
+          booking_date: item.bookingDate,
+          start_time: item.startTime,
+          duration_hours: item.durationHours,
+          customer_id: 1, // TODO: replace with logged-in user id
+        })
+        .subscribe({
+          next: (res) => console.log('Booking created', res),
+          error: (err) => console.error('Booking failed', err),
+        });
+    }
+    alert('Booking confirmed!');
+    this.cartService.clearCart();
+    this.items = [];
   }
 }

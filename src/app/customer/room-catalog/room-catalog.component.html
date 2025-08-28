@@ -1,43 +1,127 @@
-<div class="p-6 max-w-7xl mx-auto">
-  <h1 class="text-4xl font-bold mb-8 text-center">Our Rooms</h1>
-
-  <!-- Filter section -->
-  <div class="flex flex-wrap gap-4 mb-8 justify-center">
+<div class="p-8 max-w-7xl mx-auto">
+  <!-- Filters -->
+  <div
+    class="flex flex-wrap gap-6 mb-12 justify-center bg-white p-6 rounded-2xl shadow-sm"
+  >
+    <!-- Search -->
     <input
       type="text"
-      placeholder="Search by room name..."
+      placeholder="🔍 Search by room name..."
       [(ngModel)]="searchText"
-      class="px-4 py-2 border rounded w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      (ngModelChange)="onSearchInput($event)"
+      class="px-5 py-3 border rounded-lg w-72 focus:outline-none focus:ring-2 focus:ring-green-700 shadow-sm"
     />
+
+    <!-- Price -->
     <select
       [(ngModel)]="selectedPriceFilter"
-      class="px-4 py-2 border rounded w-40 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      (ngModelChange)="onPriceFilterChange($event)"
+      class="px-5 py-3 border rounded-lg w-56 focus:outline-none focus:ring-2 focus:ring-green-700 shadow-sm"
     >
       <option value="">All Prices</option>
-      <option value="low">Below $150</option>
-      <option value="medium">$150 - $250</option>
-      <option value="high">Above $250</option>
+      <option value="low">Below ₹150</option>
+      <option value="medium">₹150 - ₹250</option>
+      <option value="high">Above ₹250</option>
     </select>
+
+    <!-- Booking mode toggle -->
+    <div class="flex items-center gap-3">
+      <span class="text-sm text-gray-600">Mode</span>
+      <div class="inline-flex rounded-lg overflow-hidden border shadow-sm">
+        <button
+          type="button"
+          class="px-4 py-2 text-sm font-medium transition"
+          [class.bg-green-800]="bookingMode === 'daily'"
+          [class.text-white]="bookingMode === 'daily'"
+          [class.bg-white]="bookingMode !== 'daily'"
+          [class.text-gray-800]="bookingMode !== 'daily'"
+          (click)="setBookingMode('daily')"
+        >
+          Daily
+        </button>
+        <button
+          type="button"
+          class="px-4 py-2 text-sm font-medium transition border-l"
+          [class.bg-green-800]="bookingMode === 'hourly'"
+          [class.text-white]="bookingMode === 'hourly'"
+          [class.bg-white]="bookingMode !== 'hourly'"
+          [class.text-gray-800]="bookingMode !== 'hourly'"
+          (click)="setBookingMode('hourly')"
+        >
+          Hourly
+        </button>
+      </div>
+    </div>
+
+    <!-- Clear filters -->
+    <button
+      type="button"
+      (click)="clearFilters()"
+      class="px-5 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium text-gray-700 shadow-sm transition"
+    >
+      ✨ Clear Filters
+    </button>
   </div>
 
-  <!-- Rooms grid -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+  <!-- Loading / Empty states -->
+  <div *ngIf="loading" class="text-center text-gray-500 text-lg">
+    Loading rooms…
+  </div>
+
+  <div
+    *ngIf="!loading && filteredList.length === 0"
+    class="text-center text-gray-400 text-lg"
+  >
+    No rooms found 🛏️
+  </div>
+
+  <!-- Rooms Grid -->
+  <div
+    [@listStagger]
+    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10"
+    *ngIf="!loading && filteredList.length"
+  >
     <div
-      *ngFor="let room of filteredRooms()"
-      class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition"
+      *ngFor="let room of filteredList; trackBy: trackByRoomId"
+      class="bg-white rounded-2xl shadow-lg overflow-hidden transform hover:-translate-y-2 hover:shadow-2xl transition duration-300"
     >
-      <img
-        src="assets/room-placeholder.jpg"
-        alt="{{ room.name }}"
-        class="w-full h-48 object-cover"
-      />
+      <!-- Image -->
+      <div class="relative h-56 overflow-hidden">
+        <img
+          [src]="room.main_image || 'assets/room-placeholder.jpg'"
+          [alt]="room.name"
+          class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+        />
+        <span
+          class="absolute top-3 left-3 bg-green-800 text-white text-xs font-semibold px-3 py-1 rounded-full shadow"
+        >
+          {{ room.room_type }}
+        </span>
+      </div>
+
+      <!-- Info -->
       <div class="p-6">
-        <h2 class="text-xl font-semibold mb-2">{{ room.name }}</h2>
-        <p class="text-gray-600 mb-4">{{ room.description }}</p>
-        <p class="font-semibold mb-4">Price: ${{ room.pricePerDay }} / day</p>
+        <h2 class="text-2xl font-bold mb-2 text-gray-800">
+          {{ room.name }}
+        </h2>
+
+        <p class="text-gray-600 mb-5 line-clamp-2">{{ room.description }}</p>
+
+        <!-- Price -->
+        <div class="flex items-center justify-between mb-5">
+          <ng-container *ngIf="displayPrice(room) as priceInfo">
+            <p class="text-2xl font-semibold text-green-800">
+              ₹{{ priceInfo.value | number : "1.0-0" }}
+              <span class="text-sm text-gray-500">{{ priceInfo.unit }}</span>
+            </p>
+          </ng-container>
+        </div>
+
+        <!-- View Details -->
         <button
-          class="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+          class="w-full py-3 bg-gradient-to-r from-green-900 via-emerald-800 to-green-900 text-white font-semibold rounded-lg hover:from-green-800 hover:via-emerald-700 hover:to-green-800 transition"
           (click)="viewRoomDetails(room); $event.stopPropagation()"
+          [routerLink]="['/customer/rooms', room.id]"
         >
           View Details
         </button>

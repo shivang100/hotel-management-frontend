@@ -1,112 +1,280 @@
-<div class="max-w-4xl mx-auto p-6 bg-white rounded shadow">
-  <h1 class="text-3xl font-bold mb-6">Manage Rooms</h1>
+<div class="max-w-7xl mx-auto px-6 py-8 space-y-8">
+  <!-- Page Heading -->
+  <div
+    class="rounded-2xl bg-gradient-to-r from-green-900 via-emerald-800 to-green-900 text-white p-6 shadow"
+  >
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">
+          Manage Rooms
+        </h1>
+        <p class="text-emerald-100 mt-1">
+          Create, preview, and manage all your property rooms.
+        </p>
+      </div>
+    </div>
+  </div>
 
-  <!-- Add New Room -->
-  <div class="mb-8 border p-4 rounded shadow">
-    <h2 class="text-2xl mb-4">Add New Room</h2>
-    <form (submit)="addRoom(); $event.preventDefault()" class="space-y-4">
-      <select
-        [(ngModel)]="newRoom.roomType"
-        name="newRoomType"
-        required
-        class="border rounded p-2 w-full"
-      >
-        <option value="" disabled selected>Select room type</option>
-        <option *ngFor="let type of roomTypes" [value]="type">
-          {{ type }}
-        </option>
-      </select>
+  <!-- Add New Room Card -->
+  <div
+    class="rounded-2xl bg-white border shadow-sm overflow-hidden ring-1 ring-emerald-50"
+  >
+    <div class="border-b px-6 py-4">
+      <h2 class="text-xl font-semibold text-slate-800">Add New Room</h2>
+    </div>
 
-      <textarea
-        [(ngModel)]="newRoom.description"
-        name="newDescription"
-        placeholder="Description"
-        required
-        class="border rounded p-2 w-full"
-      ></textarea>
+    <form
+      (submit)="addRoom(); $event.preventDefault()"
+      class="p-6 grid grid-cols-1 lg:grid-cols-5 gap-6"
+    >
+      <!-- Left: Inputs -->
+      <div class="lg:col-span-3 space-y-5">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1"
+              >Room Name *</label
+            >
+            <input
+              [(ngModel)]="newRoom.name"
+              name="newName"
+              type="text"
+              placeholder="e.g., Ocean View Suite"
+              class="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-500"
+              required
+            />
+          </div>
 
-      <input
-        type="number"
-        [(ngModel)]="newRoom.pricePerDay"
-        name="newPriceDay"
-        placeholder="Price per Day"
-        required
-        min="0"
-        class="border rounded p-2 w-full"
-      />
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1"
+              >Room Type *</label
+            >
+            <select
+              [(ngModel)]="newRoom.room_type"
+              name="newRoomType"
+              class="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-500"
+              required
+            >
+              <option value="" disabled>Select room type</option>
+              <option *ngFor="let type of roomTypes" [value]="type">
+                {{ type }}
+              </option>
+            </select>
+          </div>
+        </div>
 
-      <input
-        type="number"
-        [(ngModel)]="newRoom.pricePerHour"
-        name="newPriceHour"
-        placeholder="Price per Hour"
-        min="0"
-        class="border rounded p-2 w-full"
-      />
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1"
+            >Description *</label
+          >
+          <textarea
+            [(ngModel)]="newRoom.description"
+            name="newDescription"
+            rows="4"
+            placeholder="Short, premium-friendly description..."
+            class="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-500"
+            required
+          ></textarea>
+        </div>
 
-      <!-- Image Uploads -->
-      <label>Main Image (required)</label>
-      <input
-        type="file"
-        (change)="onMainImageSelected($event)"
-        accept="image/*"
-        required
-      />
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1"
+              >Price / Day (₹) *</label
+            >
+            <input
+              type="number"
+              [(ngModel)]="newRoom.price_per_day"
+              name="newPriceDay"
+              min="0"
+              class="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-500"
+              required
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1"
+              >Price / Hour (₹)</label
+            >
+            <input
+              type="number"
+              [(ngModel)]="newRoom.price_per_hour"
+              name="newPriceHour"
+              min="0"
+              class="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-500"
+            />
+          </div>
+          <div class="flex items-end">
+            <button
+              type="submit"
+              class="inline-flex items-center justify-center w-full rounded-xl bg-emerald-600 px-4 py-2.5 font-semibold text-white shadow hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-200 active:scale-[0.99]"
+            >
+              Add Room
+            </button>
+          </div>
+        </div>
+      </div>
 
-      <label>Secondary Images (at least 2 required)</label>
-      <input
-        type="file"
-        (change)="onSecondaryImagesSelected($event)"
-        accept="image/*"
-        multiple
-      />
+      <!-- Right: Image Uploads + Previews -->
+      <div class="lg:col-span-2 space-y-5">
+        <!-- Main image -->
+        <div
+          class="rounded-xl border p-4 bg-slate-50/50 hover:bg-slate-50 transition"
+        >
+          <label class="block text-sm font-medium text-slate-700 mb-2"
+            >Main Image *</label
+          >
 
-      <button
-        type="submit"
-        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-      >
-        Add Room
-      </button>
+          <label
+            class="flex cursor-pointer items-center justify-center rounded-xl border-2 border-dashed p-6 text-slate-500 hover:border-emerald-300 hover:text-emerald-700 transition"
+          >
+            <input
+              type="file"
+              class="hidden"
+              accept="image/*"
+              (change)="onMainImageSelected($event)"
+            />
+            <div class="text-center">
+              <svg
+                class="mx-auto h-8 w-8"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 16l5-5 4 4 5-6 4 5"
+                />
+              </svg>
+              <div class="mt-2 text-sm">Click to upload</div>
+              <div class="text-xs text-slate-400">PNG, JPG up to ~5MB</div>
+            </div>
+          </label>
+
+          <div *ngIf="mainPreview" class="mt-3">
+            <img
+              [src]="mainPreview"
+              alt="Main preview"
+              class="h-40 w-full object-cover rounded-lg shadow-sm ring-1 ring-emerald-100"
+            />
+          </div>
+        </div>
+
+        <!-- Secondary images -->
+        <div
+          class="rounded-xl border p-4 bg-slate-50/50 hover:bg-slate-50 transition"
+        >
+          <label class="block text-sm font-medium text-slate-700 mb-2"
+            >Secondary Images (min 2) *</label
+          >
+
+          <label
+            class="flex cursor-pointer items-center justify-center rounded-xl border-2 border-dashed p-6 text-slate-500 hover:border-emerald-300 hover:text-emerald-700 transition"
+          >
+            <input
+              type="file"
+              class="hidden"
+              accept="image/*"
+              multiple
+              (change)="onSecondaryImagesSelected($event)"
+            />
+            <div class="text-center">
+              <svg
+                class="mx-auto h-8 w-8"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+              <div class="mt-2 text-sm">Add multiple images</div>
+              <div class="text-xs text-slate-400">PNG, JPG up to ~5MB</div>
+            </div>
+          </label>
+
+          <div
+            *ngIf="secondaryPreviews.length"
+            class="mt-3 grid grid-cols-3 gap-3"
+          >
+            <img
+              *ngFor="let src of secondaryPreviews"
+              [src]="src"
+              class="h-24 w-full object-cover rounded-lg shadow-sm ring-1 ring-emerald-100"
+            />
+          </div>
+        </div>
+      </div>
     </form>
   </div>
 
   <!-- Rooms List -->
-  <table class="w-full text-left border-collapse border border-gray-200">
-    <thead>
-      <tr class="bg-gray-100">
-        <th class="border border-gray-300 p-2">Name</th>
-        <th class="border border-gray-300 p-2">Description</th>
-        <th class="border border-gray-300 p-2">Room Type</th>
-        <th class="border border-gray-300 p-2">Price/Day</th>
-        <th class="border border-gray-300 p-2">Price/Hour</th>
-        <th class="border border-gray-300 p-2">Main Image</th>
-        <th class="border border-gray-300 p-2">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let room of rooms">
-        <td class="border border-gray-300 p-2">{{ room.name }}</td>
-        <td class="border border-gray-300 p-2">{{ room.description }}</td>
-        <td class="border border-gray-300 p-2">{{ room.roomType }}</td>
-        <td class="border border-gray-300 p-2">${{ room.pricePerDay }}</td>
-        <td class="border border-gray-300 p-2">${{ room.pricePerHour }}</td>
-        <td class="border border-gray-300 p-2">
-          <img
-            *ngIf="room.mainImage"
-            [src]="room.mainImage"
-            alt="Main Image"
-            width="100"
-          />
-        </td>
-        <td class="border border-gray-300 p-2">
-          <button
-            [routerLink]="['/admin/rooms/edit', room.id]"
-            class="bg-yellow-400 px-2 py-1 rounded hover:bg-yellow-500"
+  <div class="rounded-2xl bg-white border shadow-sm overflow-hidden">
+    <div class="flex items-center justify-between px-6 py-4 border-b">
+      <h2 class="text-xl font-semibold text-slate-800">All Rooms</h2>
+      <div class="text-sm text-slate-500">{{ rooms?.length || 0 }} total</div>
+    </div>
+
+    <div class="overflow-auto">
+      <table class="min-w-[960px] w-full text-left">
+        <thead
+          class="sticky top-0 z-10 bg-slate-50/90 backdrop-blur text-slate-700 text-sm"
+        >
+          <tr>
+            <th class="px-4 py-3 border-b">Name</th>
+            <th class="px-4 py-3 border-b">Description</th>
+            <th class="px-4 py-3 border-b">Room Type</th>
+            <th class="px-4 py-3 border-b">Price/Day</th>
+            <th class="px-4 py-3 border-b">Price/Hour</th>
+            <th class="px-4 py-3 border-b">Main Image</th>
+            <th class="px-4 py-3 border-b text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="text-sm">
+          <tr
+            *ngFor="let room of rooms"
+            class="border-b last:border-0 hover:bg-slate-50/60 transition"
           >
-            Edit
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+            <td class="px-4 py-3 font-medium text-slate-800">
+              {{ room.name }}
+            </td>
+            <td class="px-4 py-3 text-slate-600">
+              <div class="line-clamp-2">{{ room.description }}</div>
+            </td>
+            <td class="px-4 py-3">
+              <span
+                class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-emerald-200 bg-emerald-50 text-emerald-700"
+                >{{ room.room_type }}</span
+              >
+            </td>
+            <td class="px-4 py-3 font-semibold text-emerald-700">
+              ₹{{ room.price_per_day | number }}
+            </td>
+            <td class="px-4 py-3 text-slate-700">
+              ₹{{ room.price_per_hour || 0 | number }}
+            </td>
+            <td class="px-4 py-3">
+              <img
+                *ngIf="room.main_image"
+                [src]="room.main_image"
+                alt="Main Image"
+                class="h-16 w-24 object-cover rounded-lg ring-1 ring-emerald-100 shadow-sm"
+              />
+            </td>
+            <td class="px-4 py-3 text-right">
+              <a
+                [routerLink]="['/admin/rooms/edit', room.id]"
+                class="inline-flex items-center gap-2 rounded-xl border px-3 py-1.5 text-sm font-medium text-emerald-700 border-emerald-200 hover:bg-emerald-50 focus:outline-none focus:ring-4 focus:ring-emerald-200"
+                >Edit</a
+              >
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>

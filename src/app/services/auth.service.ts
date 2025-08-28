@@ -1,84 +1,135 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { BehaviorSubject, Observable, map, throwError } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
+import { Router } from '@angular/router';
 
 export interface User {
-  username: string;
+  id?: number;
+  username?: string;
+  email?: string;
   role?: string;
-  token?: string;
+  token?: string; // access token
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-  private apiUrl = 'http://localhost:5000/api/auth';
-  private currentUserSubject = new BehaviorSubject<User | null>(null);
+  // Match Flask port (5001)
+  private apiUrl = 'http://localhost:5001/api/auth';
+
+  private currentUserSubject = new BehaviorSubject<User | null>(this.getUser());
   currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient, private router: Router) {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      this.currentUserSubject.next(JSON.parse(storedUser));
-    }
-  }
-  getToken(): string | null {
-    return localStorage.getItem('access_token');
+  constructor(private http: HttpClient, private router: Router) {}
+
+  // ---- Storage helpers ----
+  private saveUser(user: User, refresh?: string) {
+    localStorage.setItem('user', JSON.stringify(user));
+    if (user.token) localStorage.setItem('token', user.token);
+    if (refresh) localStorage.setItem('refresh_token', refresh);
+    if (user.role) localStorage.setItem('role', user.role);
+    this.currentUserSubject.next(user);
   }
 
+  getUser(): User | null {
+    const s = localStorage.getItem('user');
+    return s ? JSON.parse(s) : null;
+  }
+  getUserId(): number | null {
+    return this.getUser()?.id ?? null;
+  }
+  getToken(): string | null {
+    return localStorage.getItem('token');
+  }
+  getRefreshToken(): string | null {
+    return localStorage.getItem('refresh_token');
+  }
+  getUserRole(): string | null {
+    return localStorage.getItem('role');
+  }
+
+  // ---- Auth API ----
   register(data: {
     username: string;
     email: string;
     password: string;
-  }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register`, data);
+  }): Observable<User> {
+    return this.http.post<any>(`${this.apiUrl}/register`, data).pipe(
+      map((res) => {
+        const access = res.access_token as string;
+        const refresh = res.refresh_token as string;
+        if (!access || !refresh) throw new Error('Invalid register response');
+
+        const decoded: any = jwtDecode(access);
+        const user: User = {
+          id: decoded?.sub ? Number(decoded.sub) : res.user?.id,
+          username: res.user?.username ?? data.username,
+          email: res.user?.email ?? decoded?.email,
+          role: res.user?.role ?? decoded?.role,
+          token: access,
+        };
+        this.saveUser(user, refresh);
+        return user;
+      })
+    );
   }
 
-  login(credentials: {
-    username: string;
-    password: string;
-  }): Observable<{ access_token: string }> {
-    return this.http
-      .post<{ access_token: string }>(`${this.apiUrl}/login`, credentials)
-      .pipe(
-        tap((response) => {
-          const token = response.access_token;
-          localStorage.setItem('access_token', token);
+  login(credentials: { username: string; password: string }): Observable<User> {
+    return this.http.post<any>(`${this.apiUrl}/login`, credentials).pipe(
+      map((res) => {
+        const access = res.access_token as string;
+        const refresh = res.refresh_token as string;
+        if (!access || !refresh) throw new Error('Invalid login response');
 
-          const decoded: any = jwtDecode(token);
-          const role = decoded.role;
-
-          const user: User = {
-            username: credentials.username,
-            token,
-            role,
-          };
-          localStorage.setItem('user', JSON.stringify(user));
-
-          this.currentUserSubject.next(user);
-        })
-      );
+        const decoded: any = jwtDecode(access);
+        const user: User = {
+          id: decoded?.sub ? Number(decoded.sub) : res.user?.id,
+          username: res.user?.username ?? credentials.username,
+          email: res.user?.email ?? decoded?.email,
+          role: res.user?.role ?? decoded?.role,
+          token: access,
+        };
+        this.saveUser(user, refresh);
+        return user;
+      })
+    );
   }
 
-  logout(): void {
-    localStorage.removeItem('access_token');
+  refreshAccessToken(): Observable<string> {
+    const refresh = this.getRefreshToken();
+    if (!refresh) return throwError(() => new Error('No refresh token'));
+
+    const headers = new HttpHeaders({ Authorization: `Bearer ${refresh}` });
+    return this.http.post<any>(`${this.apiUrl}/refresh`, {}, { headers }).pipe(
+      map((res) => {
+        const newAccess = res.access_token as string;
+        if (!newAccess) throw new Error('Invalid refresh response');
+
+        const u = this.getUser();
+        const decoded: any = jwtDecode(newAccess);
+        const updated: User = {
+          ...(u ?? {}),
+          id: decoded?.sub ? Number(decoded.sub) : u?.id,
+          email: decoded?.email ?? u?.email,
+          role: decoded?.role ?? u?.role,
+          token: newAccess,
+        };
+        this.saveUser(updated); // keep existing refresh token
+        return newAccess;
+      })
+    );
+  }
+
+  logout() {
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('role');
     this.currentUserSubject.next(null);
-    this.router.navigate(['/auth/login']);
+    this.router.navigate(['/login']);
   }
 
-  isAuthenticated(): boolean {
-    return !!localStorage.getItem('access_token');
-  }
-
-  getUserRole(): 'admin' | 'customer' | null {
-    const role = localStorage.getItem('user_role');
-    if (role === 'admin' || role === 'customer') {
-      return role;
-    }
-    return null;
+  isLoggedIn(): boolean {
+    return !!this.getToken();
   }
 }

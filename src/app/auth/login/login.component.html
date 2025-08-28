@@ -1,36 +1,75 @@
-<div class="min-h-screen flex items-center justify-center bg-gray-100">
-  <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
-    <h1 class="text-2xl font-bold mb-6 text-center">Login</h1>
-    <form (ngSubmit)="onLogin()" #loginForm="ngForm" class="space-y-6">
-      <div>
-        <label for="username" class="block mb-1 font-medium">Username</label>
-        <input
-          type="text"
-          id="username"
-          name="username"
-          required
-          [(ngModel)]="username"
-          class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-      <div>
-        <label for="password" class="block mb-1 font-medium">Password</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          required
-          [(ngModel)]="password"
-          class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-      <button
-        type="submit"
-        [disabled]="loginForm.form.invalid"
-        class="w-full py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition"
+<div
+  class="min-h-screen flex rounded-lg shadow-lg items-center justify-center bg-gray-100"
+>
+  <div class="flex h-[450px] shadow-2xl rounded-2xl">
+    <div class="h-full">
+      <img
+        src="assets/hotel2.jpg"
+        alt="Login Image"
+        class="hidden md:block w-full rounded-l-2xl h-full"
+      />
+    </div>
+    <div
+      class="flex flex-col items-start justify-start pt-10 pr-10 pb-10 pl-10 bg-white relative z-10 rounded-r-2xl"
+    >
+      <h1
+        class="w-full text-4xl font-medium text-center leading-snug font-serif text-gray-600"
       >
         Login
-      </button>
-    </form>
+      </h1>
+      <form
+        (ngSubmit)="onLogin()"
+        #loginForm="ngForm"
+        class="w-full mt-6 mr-0 mb-6 ml-0 relative space-y-8 sm:max-w-full md:max-w-full xm:w-full"
+      >
+        <div>
+          <label
+            for="username"
+            class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute"
+            >Username</label
+          >
+          <input
+            type="text"
+            id="username"
+            name="username"
+            required
+            [(ngModel)]="username"
+            class="border placeholder-gray-400 focus:outline-none focus:border-black w-72 pt-2 pr-4 pb-2 pl-4 mt-4 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"
+          />
+        </div>
+        <div>
+          <label
+            for="password"
+            class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute"
+            >Password</label
+          >
+          <input
+            type="password"
+            id="password"
+            name="password"
+            required
+            [(ngModel)]="password"
+            class="border placeholder-gray-400 focus:outline-none focus:border-black w-72 pt-2 pr-4 pb-2 pl-4 mt-4 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"
+          />
+        </div>
+        <div class="mt-4 text-center">
+          <p class="w-full pt-2 text-black text-center">
+            Don't have an account?
+            <a
+              (click)="goToRegister()"
+              class="self-end font-small pl-1 text-gray-600 text register-button cursor-pointer"
+              >Register here</a
+            >
+          </p>
+        </div>
+        <button
+          type="submit"
+          [disabled]="loginForm.form.invalid"
+          class="w-full tracking-wide inline-block px-4 py-2 text-lg font-medium text-center bg-gradient-to-r from-green-900 via-emerald-800 to-green-900 hover:from-green-800 hover:via-emerald-700 hover:to-green-800 cursor-pointer rounded-lg transition duration-200 text-white"
+        >
+          Login
+        </button>
+      </form>
+    </div>
   </div>
 </div>
